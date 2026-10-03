@@ -178,7 +178,6 @@ form button { margin-top: 0.6rem; width: 100%; }
 .swatch.orange { background: #ff8a3d; }
 .swatch.green { background: #4ade80; }
 .swatch.faint { background: rgba(154, 160, 180, 0.25); }
-.swatch.ring { width: 0.85rem; height: 0.85rem; background: radial-gradient(#05060a 38%, transparent 42%), conic-gradient(#f87171, #facc15, #4ade80, #60a5fa, #c084fc, #f87171); }
 
 .blocker {
   min-height: 100%;
