@@ -13,6 +13,7 @@ from pydantic import BaseModel
 
 from .agent import run_agent
 from .graph import DATA, GRAPH, NODES, blast_radius, node_source, search_codebase
+from .knowledge import load_knowledge
 
 app = FastAPI(title="RepoNav")
 app.add_middleware(
@@ -23,6 +24,7 @@ app.add_middleware(
 )
 
 CACHED = json.loads((DATA / "demo_tours.json").read_text())
+KNOWLEDGE = load_knowledge()
 ACTION_TIMEOUT_S = 25
 
 
@@ -126,6 +128,11 @@ def graph_payload() -> dict:
 @app.get("/graph")
 def graph():
     return graph_payload()
+
+
+@app.get("/knowledge")
+def knowledge():
+    return KNOWLEDGE
 
 
 @app.get("/search")

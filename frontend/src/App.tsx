@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ForceGraphMethods } from "react-force-graph-3d";
-import { ask, fetchBlast, fetchGraph, fetchNode, fetchSearch } from "./api";
+import { ask, fetchBlast, fetchGraph, fetchKnowledge, fetchNode, fetchSearch } from "./api";
 import { AgentPanel } from "./AgentPanel";
 import { Graph3D } from "./Graph3D";
 import { Inspector } from "./Inspector";
+import { KnowledgeView } from "./KnowledgeView";
 import { flyTo, playTour } from "./tour";
-import type { GNode, GraphData, NodeDetail, SearchHit } from "./types";
+import type { GNode, GraphData, KnowledgeData, NodeDetail, SearchHit } from "./types";
+
+type View = "code" | "knowledge";
 
 export default function App() {
   const fgRef = useRef<ForceGraphMethods | undefined>(undefined);
@@ -29,8 +32,32 @@ export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [hits, setHits] = useState<SearchHit[]>([]);
+  const [view, setView] = useState<View>("code");
+  const [knowledge, setKnowledge] = useState<KnowledgeData | null>(null);
+  const [knowledgeError, setKnowledgeError] = useState<string | null>(null);
 
   const onReady = useCallback(() => setReady(true), []);
+
+  useEffect(() => {
+    if (view !== "knowledge" || knowledge) return;
+    let cancelled = false;
+    fetchKnowledge()
+      .then((data) => {
+        if (!cancelled) setKnowledge(data);
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) setKnowledgeError(error instanceof Error ? error.message : "Could not load the knowledge map");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [view, knowledge]);
+
+  // The 3D graph stays mounted so its layout and tour survive a switch; only its render loop pauses.
+  useEffect(() => {
+    if (view === "code") fgRef.current?.resumeAnimation();
+    else fgRef.current?.pauseAnimation();
+  }, [view]);
 
   useEffect(() => {
     let cancelled = false;
@@ -174,57 +201,99 @@ export default function App() {
     );
   }
 
+  function openInCode(id: string) {
+    setView("code");
+    void openNode(id, true);
+  }
+
   return (
     <main className="app">
-      <Graph3D
-        data={graph}
-        path={path}
-        pathLinks={pathLinks}
-        current={currentId}
-        candidates={candidates}
-        blast={blast}
-        blastOrigin={blast ? currentId : null}
-        pulse={pulse}
-        onClick={(node) => void openNode(node.id, false)}
-        onReady={onReady}
-        fgRef={fgRef}
-      />
-      <AgentPanel
-        question={question}
-        onQuestion={setQuestion}
-        onAsk={onAsk}
-        asking={asking}
-        ready={ready}
-        log={log}
-        error={streamError}
-        search={search}
-        onSearch={setSearch}
-        hits={search.trim() ? hits : []}
-        onJump={(id) => void openNode(id, true)}
-      />
-      <Inspector
-        node={detail}
-        open={drawerOpen}
-        onToggle={() => setDrawerOpen((open) => !open)}
-        onBlast={(id) => void onBlast(id)}
-        blastActive={blast != null}
-        onClearBlast={() => setBlast(null)}
-      />
-      <ul className="legend">
-        {blast ? (
-          <>
-            <li><i className="swatch red" /> 1 hop</li>
-            <li><i className="swatch orange" /> 2 hops</li>
-            <li><i className="swatch gold" /> 3 hops or the change</li>
-          </>
+      <nav className="view-switch" aria-label="View">
+        <button type="button" className={view === "code" ? "on" : ""} aria-pressed={view === "code"} onClick={() => setView("code")}>
+          Code Graph
+        </button>
+        <button
+          type="button"
+          className={view === "knowledge" ? "on" : ""}
+          aria-pressed={view === "knowledge"}
+          onClick={() => {
+            setKnowledgeError(null);
+            setView("knowledge");
+          }}
+        >
+          Knowledge Graph
+        </button>
+      </nav>
+      <div className={view === "code" ? "stage" : "stage hidden"}>
+        <Graph3D
+          data={graph}
+          path={path}
+          pathLinks={pathLinks}
+          current={currentId}
+          candidates={candidates}
+          blast={blast}
+          blastOrigin={blast ? currentId : null}
+          pulse={pulse}
+          onClick={(node) => void openNode(node.id, false)}
+          onReady={onReady}
+          fgRef={fgRef}
+        />
+      </div>
+      {view === "knowledge" &&
+        (knowledge ? (
+          <KnowledgeView data={knowledge} codeNodes={nodesById} onOpenCode={openInCode} />
         ) : (
-          <>
-            <li><i className="swatch violet" /> Browser request</li>
-            <li><i className="swatch cyan" /> Path</li>
-            <li><i className="swatch gold" /> Current stop</li>
-          </>
-        )}
-      </ul>
+          <div className="kg-status">
+            <p className={knowledgeError ? "stream-error" : "empty"}>
+              {knowledgeError ? `The knowledge map did not load: ${knowledgeError}` : "Loading the knowledge map…"}
+            </p>
+            {knowledgeError && (
+              <button type="button" onClick={() => { setView("code"); }}>
+                Back to code graph
+              </button>
+            )}
+          </div>
+        ))}
+      {view === "code" && (
+        <>
+          <AgentPanel
+            question={question}
+            onQuestion={setQuestion}
+            onAsk={onAsk}
+            asking={asking}
+            ready={ready}
+            log={log}
+            error={streamError}
+            search={search}
+            onSearch={setSearch}
+            hits={search.trim() ? hits : []}
+            onJump={(id) => void openNode(id, true)}
+          />
+          <Inspector
+            node={detail}
+            open={drawerOpen}
+            onToggle={() => setDrawerOpen((open) => !open)}
+            onBlast={(id) => void onBlast(id)}
+            blastActive={blast != null}
+            onClearBlast={() => setBlast(null)}
+          />
+          <ul className="legend">
+            {blast ? (
+              <>
+                <li><i className="swatch red" /> 1 hop</li>
+                <li><i className="swatch orange" /> 2 hops</li>
+                <li><i className="swatch gold" /> 3 hops or the change</li>
+              </>
+            ) : (
+              <>
+                <li><i className="swatch violet" /> Browser request</li>
+                <li><i className="swatch cyan" /> Path</li>
+                <li><i className="swatch gold" /> Current stop</li>
+              </>
+            )}
+          </ul>
+        </>
+      )}
     </main>
   );
 }

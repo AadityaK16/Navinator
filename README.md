@@ -30,6 +30,12 @@ cd frontend && npm run dev
 
 The UI is at `http://127.0.0.1:43123`. The API is at `http://127.0.0.1:8741`. Copy `backend/.env.example` to `backend/.env` if you want a key or `DEMO_MODE=cached`.
 
+## Knowledge Graph
+
+The **Knowledge Graph** toggle (top left) opens a 2D concept map of the demo repo: topics, architecture, concepts, design decisions and key functions. The map is curated in `backend/data/knowledge.json` and served by `/knowledge`; it makes no AI calls.
+
+The server decides which links are code facts. A `calls_into`, `depends_on` or `part_of` link is marked verified only when a matching `calls`, `depends`, `imports` or `contains` edge exists in `graph.json`, and it carries that edge as evidence. `calls_into` and `part_of` links with no matching edge are rejected. `implements`, `explains` and `related_to` links are always shown as conceptual. Nodes and links accept `"origin": "agent"` so generated relationships can later go through the same check.
+
 ## Regenerate the graph
 
 ```bash
