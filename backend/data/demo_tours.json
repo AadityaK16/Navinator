@@ -1,0 +1,64 @@
+{
+  "auth": {
+    "stops": [
+      {
+        "node_id": "external.browser.post_login_access_token",
+        "narration": "The browser posts the email and password to /login/access-token. That request is the start of the login path.",
+        "evidence": "entry point"
+      },
+      {
+        "node_id": "app.api.routes.login.login_access_token",
+        "narration": "login_access_token checks the credentials, then builds a JWT. Next is the function that actually authenticates the user.",
+        "evidence": "calls at app/api/routes/login.py:24"
+      },
+      {
+        "node_id": "app.crud.authenticate",
+        "narration": "authenticate loads the account by email and checks the password. The next stop is that password check.",
+        "evidence": "calls at app/api/routes/login.py:30"
+      },
+      {
+        "node_id": "app.core.security.verify_password",
+        "narration": "verify_password compares the plain password with the stored hash. If it matches, the route can return an access token.",
+        "evidence": "calls at app/crud.py:50"
+      }
+    ]
+  },
+  "session": {
+    "stops": [
+      {
+        "node_id": "external.browser.authenticated_request",
+        "narration": "An authenticated request arrives with the bearer token. This entry is a new request, separate from login.",
+        "evidence": "entry point"
+      },
+      {
+        "node_id": "app.api.deps.get_current_user",
+        "narration": "get_current_user decodes the JWT and loads the user row. It depends on a database session to do that.",
+        "evidence": "calls at app/api/deps.py:30"
+      },
+      {
+        "node_id": "app.api.deps.get_db",
+        "narration": "get_db opens a SQLModel session and hands it to the dependency. That session is what reads the user.",
+        "evidence": "depends at app/api/deps.py:30"
+      }
+    ]
+  },
+  "users": {
+    "stops": [
+      {
+        "node_id": "app.api.routes.users.create_user",
+        "narration": "create_user is the admin route that accepts a new account. Next is the helper that writes the row.",
+        "evidence": "entry point"
+      },
+      {
+        "node_id": "app.crud.create_user",
+        "narration": "The CRUD create_user hashes the password and inserts the user. Next is the hash function itself.",
+        "evidence": "calls at app/api/routes/users.py:68"
+      },
+      {
+        "node_id": "app.core.security.get_password_hash",
+        "narration": "get_password_hash turns the plain password into an Argon2 hash before it is stored.",
+        "evidence": "calls at app/crud.py:12"
+      }
+    ]
+  }
+}
