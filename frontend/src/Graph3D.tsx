@@ -18,6 +18,8 @@ type Props = {
   onClick: (node: GNode) => void;
   onReady: () => void;
   fgRef: RefObject<ForceGraphMethods | undefined>;
+  width?: number;
+  height?: number;
 };
 
 function asLink(link: object): { source: string | { id?: string }; target: string | { id?: string } } {
@@ -42,6 +44,8 @@ export function Graph3D({
   onClick,
   onReady,
   fgRef,
+  width,
+  height,
 }: Props) {
   const signaled = useRef(false);
   const positioned = data.nodes.some((node) => node.fx != null);
@@ -80,6 +84,8 @@ export function Graph3D({
   return (
     <ForceGraph3D
       ref={fgRef}
+      width={width || undefined}
+      height={height || undefined}
       graphData={data}
       nodeLabel="id"
       nodeAutoColorBy="cluster"

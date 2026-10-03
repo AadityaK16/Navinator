@@ -73,25 +73,27 @@ export function Inspector({ node, open, onToggle, onBlast, blastActive, onClearB
           {!node && <p className="empty">Select a stop or a node to read the source.</p>}
           {external && <p className="empty">No source; this is the browser request.</p>}
           {node && !external && (
-            <Editor
-              height="32vh"
-              theme="vs-dark"
-              language="python"
-              value={node.file_source ?? ""}
-              options={{ readOnly: true, minimap: { enabled: false }, scrollBeyondLastLine: false }}
-              onMount={(editor) => {
-                editorRef.current = editor;
-                const start = Math.max(node.line_start, 1);
-                const end = Math.max(node.line_end || start, start);
-                editor.revealLineInCenter(start);
-                decorations.current = editor.createDecorationsCollection([
-                  {
-                    range: new monaco.Range(start, 1, end, 1),
-                    options: { isWholeLine: true, className: "hl-line" },
-                  },
-                ]);
-              }}
-            />
+            <div className="editor-wrap">
+              <Editor
+                height="100%"
+                theme="vs-dark"
+                language="python"
+                value={node.file_source ?? ""}
+                options={{ readOnly: true, minimap: { enabled: false }, scrollBeyondLastLine: false }}
+                onMount={(editor) => {
+                  editorRef.current = editor;
+                  const start = Math.max(node.line_start, 1);
+                  const end = Math.max(node.line_end || start, start);
+                  editor.revealLineInCenter(start);
+                  decorations.current = editor.createDecorationsCollection([
+                    {
+                      range: new monaco.Range(start, 1, end, 1),
+                      options: { isWholeLine: true, className: "hl-line" },
+                    },
+                  ]);
+                }}
+              />
+            </div>
           )}
         </div>
       )}

@@ -49,7 +49,7 @@ button.ghost {
   top: 16px;
   right: 16px;
   width: min(380px, calc(100vw - 32px));
-  max-height: calc(100vh - 32px);
+  max-height: calc(100% - 32px);
   overflow: auto;
   padding: 16px 16px 12px;
   border-radius: 16px;
@@ -127,8 +127,9 @@ form button { margin-top: 0.6rem; width: 100%; }
   bottom: 16px;
   z-index: 2;
   border-radius: 16px;
-  max-height: calc(32vh + 88px);
 }
+
+.editor-wrap { height: clamp(140px, 32cqh, 360px); }
 
 .drawer header {
   display: flex;
@@ -186,34 +187,117 @@ form button { margin-top: 0.6rem; width: 100%; }
   border-radius: 16px;
 }
 
-.stage, .kg { position: absolute; inset: 0; }
+/* Panes: code | divider | knowledge. Each pane is a size container, so its overlays
+   respond to the pane's width rather than the window's. */
+.panes { position: absolute; inset: 0; display: flex; }
 
-.stage.hidden { visibility: hidden; }
+.stacked .panes { flex-direction: column; }
+
+.pane {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+  container-type: size;
+  transition: flex-basis 0.34s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.25s;
+}
+
+.code-pane { flex: 0 0 var(--code-basis); container-name: codepane; }
+
+.kg-pane { flex: 1 1 0; container-name: kgpane; }
+
+.pane.collapsed { opacity: 0; visibility: hidden; transition: flex-basis 0.34s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.2s, visibility 0s 0.34s; }
+
+.panes.dragging { cursor: col-resize; user-select: none; }
+
+.stacked .panes.dragging { cursor: row-resize; }
+
+.panes.dragging .pane { transition: none; pointer-events: none; }
+
+.kg { position: absolute; inset: 0; }
+
+.divider {
+  flex: 0 0 6px;
+  position: relative;
+  z-index: 4;
+  cursor: col-resize;
+  touch-action: none;
+  outline: none;
+  transition: flex-basis 0.34s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.2s;
+}
+
+.stacked .divider { cursor: row-resize; }
+
+.divider::before {
+  content: "";
+  position: absolute;
+  inset: 0 2px;
+  background: rgba(54, 197, 255, 0.16);
+  transition: background 0.15s;
+}
+
+.stacked .divider::before { inset: 2px 0; }
+
+.divider .grip {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 4px;
+  height: 40px;
+  border-radius: 99px;
+  background: #36c5ff;
+  opacity: 0.55;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.15s, height 0.15s;
+}
+
+.stacked .divider .grip { width: 40px; height: 4px; }
+
+.divider:hover::before, .divider:focus-visible::before, .dragging .divider::before { background: rgba(54, 197, 255, 0.5); }
+
+.divider:hover .grip, .divider:focus-visible .grip, .dragging .divider .grip { opacity: 1; height: 56px; }
+
+.stacked .divider:hover .grip, .stacked .divider:focus-visible .grip, .stacked .dragging .divider .grip { height: 4px; width: 56px; }
+
+.divider.off { flex-basis: 0; opacity: 0; pointer-events: none; }
 
 .view-switch {
   position: absolute;
   left: 16px;
   top: 16px;
-  z-index: 3;
-  display: flex;
-  gap: 2px;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   padding: 3px;
   border-radius: 10px;
 }
 
+.view-switch .pill {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc((100% - 6px) / 3);
+  border-radius: 7px;
+  background: rgba(54, 197, 255, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(54, 197, 255, 0.35);
+  transform: translateX(calc(var(--i, 0) * 100%));
+  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
 .view-switch button {
+  position: relative;
   background: transparent;
   color: #b7b9c7;
   font-size: 0.82rem;
   font-weight: 550;
-  padding: 0.4rem 0.75rem;
+  padding: 0.4rem 0.85rem;
   border-radius: 7px;
-  transition: background 0.15s, color 0.15s;
+  text-align: center;
+  transition: color 0.15s;
 }
 
-.view-switch button:hover { color: #e7e8ee; }
-
-.view-switch button.on { background: rgba(54, 197, 255, 0.16); color: #e7e8ee; }
+.view-switch button:hover, .view-switch button.on { color: #ffffff; }
 
 .mono { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; }
 
@@ -222,14 +306,16 @@ form button { margin-top: 0.6rem; width: 100%; }
 .kg-controls {
   position: absolute;
   left: 16px;
-  top: 64px;
+  top: 16px;
   z-index: 2;
   width: 272px;
-  max-height: calc(100vh - 80px);
+  max-height: calc(100% - 32px);
   overflow: auto;
   padding: 12px;
   border-radius: 14px;
 }
+
+.kg-controls { transition: opacity 0.2s, transform 0.2s; }
 
 .kg-controls input { margin-top: 0.5rem; }
 
@@ -276,8 +362,8 @@ form button { margin-top: 0.6rem; width: 100%; }
   right: 16px;
   top: 16px;
   z-index: 2;
-  width: min(340px, calc(100vw - 32px));
-  max-height: calc(100vh - 32px);
+  width: min(340px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
   overflow: auto;
   padding: 12px 14px 14px;
   border-radius: 14px;
@@ -370,22 +456,67 @@ form button { margin-top: 0.6rem; width: 100%; }
 
 .kg-status { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 0.8rem; }
 
-@media (max-width: 800px) {
-  .panel {
-    top: 52px;
-    right: 0;
-    left: 0;
-    width: auto;
-    max-height: 46vh;
-    border-radius: 0 0 16px 16px;
-  }
-  .view-switch { left: 8px; top: 8px; }
-  .kg-controls { left: 8px; right: 8px; top: 52px; width: auto; max-height: 34vh; }
-  .kg-detail { top: auto; bottom: 8px; left: 8px; right: 8px; width: auto; max-height: 46vh; }
-  .drawer {
-    left: 8px;
-    right: 8px;
-    bottom: 8px;
-  }
+/* The view switch sits over whichever pane is top-left. */
+.mode-knowledge .kg-controls { top: 64px; max-height: calc(100% - 80px); }
+
+@container codepane (max-width: 1000px) {
+  .drawer { right: 16px; }
+  .panel { width: min(340px, calc(100% - 32px)); max-height: calc(58% - 24px); }
+  .editor-wrap { height: clamp(120px, 28cqh, 300px); }
+}
+
+@container codepane (max-width: 640px) {
+  .panel { top: 56px; left: 10px; right: 10px; width: auto; max-height: calc(42% - 56px); padding: 12px; }
+  .panel h1 { font-size: 1.35rem; }
+  .drawer { left: 10px; right: 10px; bottom: 10px; max-height: calc(56% - 10px); overflow: auto; }
+  .drawer header { padding: 8px 10px; }
+  .drawer header .meta { order: -1; flex-basis: 100%; }
+  .drawer-actions button { font-size: 0.8rem; padding: 0.4rem 0.6rem; }
+  .editor-wrap { height: clamp(90px, 22cqh, 200px); }
   .legend { display: none; }
+}
+
+@container codepane (max-height: 560px) {
+  .legend { display: none; }
+  .editor-wrap { height: clamp(90px, 22cqh, 220px); }
+}
+
+/* Mid-width map pane: both cards stay at the sides, just slimmer. */
+@container kgpane (max-width: 900px) {
+  .kg-controls { width: 232px; }
+  .kg-controls .kicker { display: none; }
+  .kg-controls input { margin-top: 0; }
+  .kg-kinds { flex-direction: row; flex-wrap: wrap; gap: 4px; }
+  .kg-kind { width: auto; padding: 0.25rem 0.5rem; border: 1px solid rgba(255, 255, 255, 0.1); }
+  .kg-kind small { display: none; }
+  .kg-detail { width: min(300px, calc(100% - 32px)); }
+}
+
+/* Compact map pane: controls span the top, details become a bottom sheet that
+   replaces them while open, so the graph keeps a visible band. */
+@container kgpane (max-width: 620px) {
+  .kg-controls { left: 10px; right: 10px; top: 10px; width: auto; padding: 8px; }
+  .kg-kinds { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .kg-kind { flex: none; }
+  .kg-edges { display: none; }
+  .kg-reset { margin-top: 0.4rem; padding: 0.35rem; }
+  .kg-detail { top: auto; bottom: 10px; left: 10px; right: 10px; width: auto; max-height: 52%; }
+  .has-detail .kg-controls { opacity: 0; pointer-events: none; transform: translateY(-6px); }
+}
+
+@container kgpane (max-height: 520px) {
+  .kg-kinds { flex-direction: row; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .kg-kind { flex: none; width: auto; }
+  .kg-kind small, .kg-edges, .kg-controls .kicker { display: none; }
+  .kg-detail { max-height: calc(100% - 20px); }
+}
+
+@media (max-width: 800px) {
+  .view-switch { left: 8px; top: 8px; }
+  .view-switch button { padding: 0.35rem 0.6rem; }
+  .mode-knowledge .kg-controls { top: 52px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pane, .pane.collapsed, .divider, .view-switch .pill, .kg-detail { transition: none; animation: none; }
 }

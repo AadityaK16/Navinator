@@ -1,14 +1,28 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { ForceGraphMethods } from "react-force-graph-3d";
 import { ask, fetchBlast, fetchGraph, fetchKnowledge, fetchNode, fetchSearch } from "./api";
 import { AgentPanel } from "./AgentPanel";
 import { Graph3D } from "./Graph3D";
 import { Inspector } from "./Inspector";
 import { KnowledgeView } from "./KnowledgeView";
+import { useElementSize, useMediaQuery } from "./layout";
+import { SPLIT_MAX, SPLIT_MIN, SplitDivider } from "./SplitDivider";
 import { flyTo, playTour } from "./tour";
 import type { GNode, GraphData, KnowledgeData, NodeDetail, SearchHit } from "./types";
 
-type View = "code" | "knowledge";
+type Mode = "code" | "split" | "knowledge";
+
+const MODES: { id: Mode; label: string; key: string }[] = [
+  { id: "code", label: "Code", key: "1" },
+  { id: "split", label: "Split", key: "2" },
+  { id: "knowledge", label: "Knowledge", key: "3" },
+];
+const SPLIT_KEY = "reponav.split";
+
+function savedRatio(): number {
+  const value = Number(localStorage.getItem(SPLIT_KEY));
+  return value >= SPLIT_MIN && value <= SPLIT_MAX ? value : 0.5;
+}
 
 export default function App() {
   const fgRef = useRef<ForceGraphMethods | undefined>(undefined);
@@ -32,14 +46,43 @@ export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [hits, setHits] = useState<SearchHit[]>([]);
-  const [view, setView] = useState<View>("code");
+  const [mode, setMode] = useState<Mode>("code");
+  const [ratio, setRatio] = useState(savedRatio);
+  const [dragging, setDragging] = useState(false);
   const [knowledge, setKnowledge] = useState<KnowledgeData | null>(null);
   const [knowledgeError, setKnowledgeError] = useState<string | null>(null);
+  const panesRef = useRef<HTMLDivElement | null>(null);
+  const [codePaneRef, codeSize] = useElementSize<HTMLElement>();
+  const [kgPaneRef, kgSize] = useElementSize<HTMLElement>();
+  const stacked = useMediaQuery("(max-width: 800px)");
+  const codeVisible = mode !== "knowledge";
+  const kgVisible = mode !== "code";
 
   const onReady = useCallback(() => setReady(true), []);
 
+  const switchMode = useCallback((next: Mode) => {
+    if (next !== "code") setKnowledgeError(null);
+    setMode(next);
+  }, []);
+
   useEffect(() => {
-    if (view !== "knowledge" || knowledge) return;
+    localStorage.setItem(SPLIT_KEY, String(ratio));
+  }, [ratio]);
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      if (target?.closest("input, textarea, [contenteditable], .monaco-editor")) return;
+      const match = MODES.find((m) => m.key === event.key);
+      if (match) switchMode(match.id);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [switchMode]);
+
+  useEffect(() => {
+    if (!kgVisible || knowledge) return;
     let cancelled = false;
     fetchKnowledge()
       .then((data) => {
@@ -51,13 +94,13 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [view, knowledge]);
+  }, [kgVisible, knowledge]);
 
   // The 3D graph stays mounted so its layout and tour survive a switch; only its render loop pauses.
   useEffect(() => {
-    if (view === "code") fgRef.current?.resumeAnimation();
+    if (codeVisible) fgRef.current?.resumeAnimation();
     else fgRef.current?.pauseAnimation();
-  }, [view]);
+  }, [codeVisible]);
 
   useEffect(() => {
     let cancelled = false;
@@ -201,61 +244,53 @@ export default function App() {
     );
   }
 
+  // From the map alone, open split so the concept stays beside its source.
   function openInCode(id: string) {
-    setView("code");
+    if (mode === "knowledge") setMode("split");
     void openNode(id, true);
   }
 
+  const codeBasis = mode === "code" ? "100%" : mode === "knowledge" ? "0%" : `calc(${ratio * 100}% - 3px)`;
+  const modeIndex = MODES.findIndex((m) => m.id === mode);
+
   return (
-    <main className="app">
-      <nav className="view-switch" aria-label="View">
-        <button type="button" className={view === "code" ? "on" : ""} aria-pressed={view === "code"} onClick={() => setView("code")}>
-          Code Graph
-        </button>
-        <button
-          type="button"
-          className={view === "knowledge" ? "on" : ""}
-          aria-pressed={view === "knowledge"}
-          onClick={() => {
-            setKnowledgeError(null);
-            setView("knowledge");
-          }}
-        >
-          Knowledge Graph
-        </button>
-      </nav>
-      <div className={view === "code" ? "stage" : "stage hidden"}>
-        <Graph3D
-          data={graph}
-          path={path}
-          pathLinks={pathLinks}
-          current={currentId}
-          candidates={candidates}
-          blast={blast}
-          blastOrigin={blast ? currentId : null}
-          pulse={pulse}
-          onClick={(node) => void openNode(node.id, false)}
-          onReady={onReady}
-          fgRef={fgRef}
-        />
-      </div>
-      {view === "knowledge" &&
-        (knowledge ? (
-          <KnowledgeView data={knowledge} codeNodes={nodesById} onOpenCode={openInCode} />
-        ) : (
-          <div className="kg-status">
-            <p className={knowledgeError ? "stream-error" : "empty"}>
-              {knowledgeError ? `The knowledge map did not load: ${knowledgeError}` : "Loading the knowledge map…"}
-            </p>
-            {knowledgeError && (
-              <button type="button" onClick={() => { setView("code"); }}>
-                Back to code graph
-              </button>
-            )}
-          </div>
+    <main className={`app mode-${mode} ${stacked ? "stacked" : ""}`}>
+      <nav className="view-switch" aria-label="View" style={{ "--i": modeIndex } as CSSProperties}>
+        <span className="pill" aria-hidden="true" />
+        {MODES.map((m) => (
+          <button
+            key={m.id}
+            type="button"
+            className={mode === m.id ? "on" : ""}
+            aria-pressed={mode === m.id}
+            title={`${m.label} view (${m.key})`}
+            onClick={() => switchMode(m.id)}
+          >
+            {m.label}
+          </button>
         ))}
-      {view === "code" && (
-        <>
+      </nav>
+      <div
+        ref={panesRef}
+        className={`panes ${dragging ? "dragging" : ""}`}
+        style={{ "--code-basis": codeBasis } as CSSProperties}
+      >
+        <section ref={codePaneRef} className={`pane code-pane ${codeVisible ? "" : "collapsed"}`} aria-hidden={!codeVisible}>
+          <Graph3D
+            data={graph}
+            path={path}
+            pathLinks={pathLinks}
+            current={currentId}
+            candidates={candidates}
+            blast={blast}
+            blastOrigin={blast ? currentId : null}
+            pulse={pulse}
+            onClick={(node) => void openNode(node.id, false)}
+            onReady={onReady}
+            fgRef={fgRef}
+            width={codeSize.width}
+            height={codeSize.height}
+          />
           <AgentPanel
             question={question}
             onQuestion={setQuestion}
@@ -292,8 +327,42 @@ export default function App() {
               </>
             )}
           </ul>
-        </>
-      )}
+        </section>
+        <SplitDivider
+          ratio={ratio}
+          onRatio={setRatio}
+          onDragging={setDragging}
+          stacked={stacked}
+          hidden={mode !== "split"}
+          containerRef={panesRef}
+        />
+        <section ref={kgPaneRef} className={`pane kg-pane ${kgVisible ? "" : "collapsed"}`} aria-hidden={!kgVisible}>
+          {knowledge ? (
+            <KnowledgeView
+              data={knowledge}
+              codeNodes={nodesById}
+              onOpenCode={openInCode}
+              width={kgSize.width}
+              height={kgSize.height}
+              active={kgVisible}
+              follow={mode === "split" ? currentId : null}
+            />
+          ) : (
+            kgVisible && (
+              <div className="kg-status">
+                <p className={knowledgeError ? "stream-error" : "empty"}>
+                  {knowledgeError ? `The knowledge map did not load: ${knowledgeError}` : "Loading the knowledge map…"}
+                </p>
+                {knowledgeError && (
+                  <button type="button" onClick={() => switchMode("code")}>
+                    Back to code graph
+                  </button>
+                )}
+              </div>
+            )
+          )}
+        </section>
+      </div>
     </main>
   );
 }

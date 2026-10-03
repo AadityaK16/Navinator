@@ -19,9 +19,15 @@ type Props = {
   data: KnowledgeData;
   codeNodes: Record<string, GNode>;
   onOpenCode: (id: string) => void;
+  width: number;
+  height: number;
+  // False while the pane is collapsed: the render loop pauses and shortcuts stand down.
+  active: boolean;
+  // Code graph node to mirror, set while both graphs are on screen.
+  follow: string | null;
 };
 
-export function KnowledgeView({ data, codeNodes, onOpenCode }: Props) {
+export function KnowledgeView({ data, codeNodes, onOpenCode, width, height, active, follow }: Props) {
   const fgRef = useRef<ForceGraphMethods<Node, Link> | undefined>(undefined);
   const fade = useRef(new Map<string, number>());
   const fitted = useRef(false);
@@ -121,9 +127,15 @@ export function KnowledgeView({ data, codeNodes, onOpenCode }: Props) {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") setSelected(null);
     };
+    if (!active) return;
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [active]);
+
+  useEffect(() => {
+    if (active) fgRef.current?.resumeAnimation();
+    else fgRef.current?.pauseAnimation();
+  }, [active]);
 
   const select = useCallback(
     (id: string) => {
@@ -137,6 +149,31 @@ export function KnowledgeView({ data, codeNodes, onOpenCode }: Props) {
     },
     [byId],
   );
+
+  const selectedRef = useRef(selected);
+  useEffect(() => {
+    selectedRef.current = selected;
+  }, [selected]);
+
+  useEffect(() => {
+    if (!follow) return;
+    const match =
+      data.nodes.find((node) => node.kind === "function" && node.code_refs[0] === follow) ??
+      data.nodes.find((node) => node.kind === "architecture" && node.code_refs.includes(follow));
+    if (match && match.id !== selectedRef.current) select(match.id);
+  }, [data, follow, select]);
+
+  // Re-frame after the pane settles at a new size, keeping the selection in view.
+  useEffect(() => {
+    if (!active || !width || !height || !fitted.current) return;
+    const timer = window.setTimeout(() => {
+      const fg = fgRef.current;
+      const node = selectedRef.current ? byId.get(selectedRef.current) : undefined;
+      if (node?.x != null && node.y != null) fg?.centerAt(node.x, node.y, 400);
+      else fg?.zoomToFit(400, 50);
+    }, 360);
+    return () => window.clearTimeout(timer);
+  }, [active, byId, height, width]);
 
   function zoomToCluster(id: string) {
     setSelected(null);
@@ -223,9 +260,11 @@ export function KnowledgeView({ data, codeNodes, onOpenCode }: Props) {
   const selectedNode = selected ? byId.get(selected) : undefined;
 
   return (
-    <div className="kg">
+    <div className={`kg ${selectedNode ? "has-detail" : ""}`}>
       <ForceGraph2D<KNode, KLink>
         ref={fgRef}
+        width={width || undefined}
+        height={height || undefined}
         graphData={graphData}
         backgroundColor="#05060a"
         autoPauseRedraw={false}
