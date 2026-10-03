@@ -368,6 +368,7 @@ export default function App() {
               </>
             ) : (
               <>
+                <li><i className="swatch ring" /> File, its code shares its colour</li>
                 <li><i className="swatch violet" /> Browser request</li>
                 <li><i className="swatch cyan" /> Path</li>
                 <li><i className="swatch gold" /> Current stop</li>
