@@ -80,7 +80,10 @@ def get_client():
     if _client is None:
         import anthropic
 
-        _client = anthropic.AsyncAnthropic()
+        # User-level keys (sk-ant-usr-...) are rejected unless the request names a workspace.
+        workspace = os.environ.get("ANTHROPIC_WORKSPACE_ID")
+        headers = {"anthropic-workspace-id": workspace} if workspace else None
+        _client = anthropic.AsyncAnthropic(default_headers=headers)
     return _client
 
 
