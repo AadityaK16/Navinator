@@ -36,6 +36,15 @@ The **Knowledge Graph** toggle (top left) opens a 2D concept map of the demo rep
 
 The server decides which links are code facts. A `calls_into`, `depends_on` or `part_of` link is marked verified only when a matching `calls`, `depends`, `imports` or `contains` edge exists in `graph.json`, and it carries that edge as evidence. `calls_into` and `part_of` links with no matching edge are rejected. `implements`, `explains` and `related_to` links are always shown as conceptual. Nodes and links accept `"origin": "agent"` so generated relationships can later go through the same check.
 
+## Time machine
+
+`backend/data/history.json` replays every commit that touched the backend (2019 to the pin) through the same parser. The History button next to the view switch scrubs both graphs through time: code nodes appear when their function, class, or file arrived, and concepts in the knowledge map appear with the code they describe. To rebuild it:
+
+```bash
+git clone https://github.com/fastapi/full-stack-fastapi-template /tmp/fft
+cd backend && python3 -m reponav.history /tmp/fft $(head -1 ../demo-repo/PIN) data/history.json
+```
+
 ## Regenerate the graph
 
 ```bash

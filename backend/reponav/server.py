@@ -25,6 +25,7 @@ app.add_middleware(
 
 CACHED = json.loads((DATA / "demo_tours.json").read_text())
 KNOWLEDGE = load_knowledge()
+HISTORY_PATH = DATA / "history.json"
 ACTION_TIMEOUT_S = 25
 
 
@@ -133,6 +134,13 @@ def graph():
 @app.get("/knowledge")
 def knowledge():
     return KNOWLEDGE
+
+
+@app.get("/history")
+def history():
+    if not HISTORY_PATH.exists():
+        raise HTTPException(status_code=404, detail="no history; run python -m reponav.history")
+    return json.loads(HISTORY_PATH.read_text())
 
 
 @app.get("/search")

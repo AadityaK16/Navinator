@@ -15,6 +15,27 @@ function idOf(end: End): string {
   return typeof end === "object" ? end.id : String(end);
 }
 
+// Snapshot index at which each concept enters the time machine. Nodes with code refs
+// arrive with their first ref; concepts, decisions and topics arrive with their
+// earliest code-backed neighbour, or from the start if nothing anchors them.
+function arrivals(data: KnowledgeData, bornAt: Map<string, number>): Map<string, number> {
+  const at = new Map<string, number>();
+  for (const node of data.nodes) {
+    const times = node.code_refs.map((ref) => bornAt.get(ref) ?? 0);
+    if (times.length) at.set(node.id, Math.min(...times));
+  }
+  const anchored = new Map(at);
+  for (const node of data.nodes) {
+    if (at.has(node.id)) continue;
+    const times = data.links
+      .filter((link) => link.source === node.id || link.target === node.id)
+      .map((link) => anchored.get(String(link.source === node.id ? link.target : link.source)))
+      .filter((time): time is number => time != null);
+    at.set(node.id, times.length ? Math.min(...times) : 0);
+  }
+  return at;
+}
+
 type Props = {
   data: KnowledgeData;
   codeNodes: Record<string, GNode>;
@@ -25,9 +46,12 @@ type Props = {
   active: boolean;
   // Code graph node to mirror, set while both graphs are on screen.
   follow: string | null;
+  // Time machine, shared with the code graph: null timeIndex means today.
+  bornAt: Map<string, number> | null;
+  timeIndex: number | null;
 };
 
-export function KnowledgeView({ data, codeNodes, onOpenCode, width, height, active, follow }: Props) {
+export function KnowledgeView({ data, codeNodes, onOpenCode, width, height, active, follow, bornAt, timeIndex }: Props) {
   const fgRef = useRef<ForceGraphMethods<Node, Link> | undefined>(undefined);
   const fade = useRef(new Map<string, number>());
   const fitted = useRef(false);
@@ -64,7 +88,18 @@ export function KnowledgeView({ data, codeNodes, onOpenCode, width, height, acti
     return null;
   }, [cluster, data, focusId, neighbors]);
 
-  const visible = useCallback((node: KNode | undefined) => node != null && !hidden.has(node.kind), [hidden]);
+  const arrival = useMemo(() => (bornAt ? arrivals(data, bornAt) : null), [bornAt, data]);
+  const visible = useCallback(
+    (node: KNode | undefined) =>
+      node != null &&
+      !hidden.has(node.kind) &&
+      (timeIndex == null || (arrival?.get(node.id) ?? 0) <= timeIndex),
+    [arrival, hidden, timeIndex],
+  );
+
+  useEffect(() => {
+    if (selected && !visible(byId.get(selected))) setSelected(null);
+  }, [byId, selected, visible]);
 
   useEffect(() => {
     const fg = fgRef.current;
@@ -237,6 +272,13 @@ export function KnowledgeView({ data, codeNodes, onOpenCode, width, height, acti
     fade.current.set(node.id, alpha);
     ctx.globalAlpha = alpha;
     drawMark(ctx, node.kind, x, y, node.id === selected);
+    if (timeIndex != null && arrival?.get(node.id) === timeIndex) {
+      ctx.beginPath();
+      ctx.arc(x, y, KIND[node.kind].size + 3, 0, 2 * Math.PI);
+      ctx.strokeStyle = "#4ade80";
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+    }
 
     const prominent = node.kind === "topic" || node.kind === "architecture";
     const inFocus = focus?.has(node.id) ?? false;

@@ -1,4 +1,4 @@
-import type { Action, BlastHit, GraphData, KnowledgeData, NodeDetail, SearchHit } from "./types";
+import type { Action, BlastHit, GraphData, History, KnowledgeData, NodeDetail, SearchHit } from "./types";
 
 const BASE = import.meta.env.VITE_API_BASE ?? "http://127.0.0.1:8741";
 
@@ -16,6 +16,10 @@ export function fetchGraph(): Promise<GraphData> {
 
 export function fetchKnowledge(): Promise<KnowledgeData> {
   return getJson("/knowledge");
+}
+
+export function fetchHistory(): Promise<History> {
+  return getJson("/history");
 }
 
 export function fetchNode(id: string): Promise<NodeDetail> {

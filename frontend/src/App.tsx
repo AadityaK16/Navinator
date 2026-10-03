@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { ForceGraphMethods } from "react-force-graph-3d";
-import { ask, fetchBlast, fetchGraph, fetchKnowledge, fetchNode, fetchSearch } from "./api";
+import { ask, fetchBlast, fetchGraph, fetchHistory, fetchKnowledge, fetchNode, fetchSearch } from "./api";
 import { AgentPanel } from "./AgentPanel";
 import { Graph3D } from "./Graph3D";
 import { Inspector } from "./Inspector";
 import { KnowledgeView } from "./KnowledgeView";
 import { useElementSize, useMediaQuery } from "./layout";
 import { SPLIT_MAX, SPLIT_MIN, SplitDivider } from "./SplitDivider";
+import { Timeline } from "./Timeline";
 import { flyTo, playTour } from "./tour";
-import type { GNode, GraphData, KnowledgeData, NodeDetail, SearchHit } from "./types";
+import type { GNode, GraphData, History, KnowledgeData, NodeDetail, SearchHit } from "./types";
 
 type Mode = "code" | "split" | "knowledge";
 
@@ -51,6 +52,10 @@ export default function App() {
   const [dragging, setDragging] = useState(false);
   const [knowledge, setKnowledge] = useState<KnowledgeData | null>(null);
   const [knowledgeError, setKnowledgeError] = useState<string | null>(null);
+  const [history, setHistory] = useState<History | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [timeIndex, setTimeIndex] = useState<number | null>(null);
+  const [playing, setPlaying] = useState(false);
   const panesRef = useRef<HTMLDivElement | null>(null);
   const [codePaneRef, codeSize] = useElementSize<HTMLElement>();
   const [kgPaneRef, kgSize] = useElementSize<HTMLElement>();
@@ -59,6 +64,17 @@ export default function App() {
   const kgVisible = mode !== "code";
 
   const onReady = useCallback(() => setReady(true), []);
+  const bornAt = useMemo(() => (history ? new Map(Object.entries(history.born_at)) : null), [history]);
+
+  // Tours, blast radius and jumps work on today's graph, so they leave the past first.
+  const backToToday = useCallback(() => {
+    setPlaying(false);
+    setTimeIndex(null);
+  }, []);
+
+  useEffect(() => {
+    fetchHistory().then(setHistory).catch(() => setHistory(null));
+  }, []);
 
   const switchMode = useCallback((next: Mode) => {
     if (next !== "code") setKnowledgeError(null);
@@ -156,6 +172,7 @@ export default function App() {
   }
 
   async function openNode(id: string, fly: boolean) {
+    if (timeIndex != null && (bornAt?.get(id) ?? 0) > timeIndex) backToToday();
     const node = await fetchNode(id);
     showNode(node);
     if (fly) {
@@ -177,6 +194,7 @@ export default function App() {
     setLog([]);
     setCandidates(new Set());
     setBlast(null);
+    backToToday();
     let sawTour = false;
     closeStream.current = ask(q, (action) => {
       if (generation !== tourGen.current) return;
@@ -214,6 +232,7 @@ export default function App() {
   }
 
   async function onBlast(id: string) {
+    backToToday();
     const hitsForNode = await fetchBlast(id);
     setBlast(new Map(hitsForNode.map((hit) => [hit.id, hit.distance])));
     const framed = new Set(hitsForNode.map((hit) => hit.id));
@@ -252,24 +271,45 @@ export default function App() {
 
   const codeBasis = mode === "code" ? "100%" : mode === "knowledge" ? "0%" : `calc(${ratio * 100}% - 3px)`;
   const modeIndex = MODES.findIndex((m) => m.id === mode);
+  const pastSnap = history && timeIndex != null ? history.snapshots[timeIndex] : null;
 
   return (
     <main className={`app mode-${mode} ${stacked ? "stacked" : ""}`}>
-      <nav className="view-switch" aria-label="View" style={{ "--i": modeIndex } as CSSProperties}>
-        <span className="pill" aria-hidden="true" />
-        {MODES.map((m) => (
+      <div className="topbar">
+        <nav className="view-switch" aria-label="View" style={{ "--i": modeIndex } as CSSProperties}>
+          <span className="pill" aria-hidden="true" />
+          {MODES.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              className={mode === m.id ? "on" : ""}
+              aria-pressed={mode === m.id}
+              title={`${m.label} view (${m.key})`}
+              onClick={() => switchMode(m.id)}
+            >
+              {m.label}
+            </button>
+          ))}
+        </nav>
+        {history && (
           <button
-            key={m.id}
             type="button"
-            className={mode === m.id ? "on" : ""}
-            aria-pressed={mode === m.id}
-            title={`${m.label} view (${m.key})`}
-            onClick={() => switchMode(m.id)}
+            className={`history-toggle ${historyOpen ? "on" : ""} ${pastSnap ? "past" : ""}`}
+            aria-expanded={historyOpen}
+            title="Replay how the code grew, commit by commit"
+            onClick={() => setHistoryOpen((open) => !open)}
           >
-            {m.label}
+            <i aria-hidden="true" />
+            {pastSnap ? pastSnap.date : "History"}
           </button>
-        ))}
-      </nav>
+        )}
+        {history && (
+          // Stays mounted while hidden so a replay keeps running with the card closed.
+          <div hidden={!historyOpen}>
+            <Timeline history={history} index={timeIndex} onIndex={setTimeIndex} playing={playing} onPlaying={setPlaying} />
+          </div>
+        )}
+      </div>
       <div
         ref={panesRef}
         className={`panes ${dragging ? "dragging" : ""}`}
@@ -285,6 +325,8 @@ export default function App() {
             blast={blast}
             blastOrigin={blast ? currentId : null}
             pulse={pulse}
+            bornAt={bornAt}
+            timeIndex={timeIndex}
             onClick={(node) => void openNode(node.id, false)}
             onReady={onReady}
             fgRef={fgRef}
@@ -319,6 +361,11 @@ export default function App() {
                 <li><i className="swatch orange" /> 2 hops</li>
                 <li><i className="swatch gold" /> 3 hops or the change</li>
               </>
+            ) : timeIndex != null ? (
+              <>
+                <li><i className="swatch green" /> Added in this commit</li>
+                <li><i className="swatch faint" /> Later code is hidden</li>
+              </>
             ) : (
               <>
                 <li><i className="swatch violet" /> Browser request</li>
@@ -346,6 +393,8 @@ export default function App() {
               height={kgSize.height}
               active={kgVisible}
               follow={mode === "split" ? currentId : null}
+              bornAt={bornAt}
+              timeIndex={timeIndex}
             />
           ) : (
             kgVisible && (

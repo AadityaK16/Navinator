@@ -92,6 +92,21 @@ export type KnowledgeData = {
   rejected: { id: string; reason: string }[];
 };
 
+export type Snapshot = {
+  sha: string;
+  date: string;
+  author: string;
+  subject: string;
+  nodes: number;
+  edges: number;
+  files: number;
+  added: string[];
+  removed: string[];
+};
+
+// born_at maps each code node id to the snapshot index where it last appeared.
+export type History = { pin: string; snapshots: Snapshot[]; born_at: Record<string, number> };
+
 export const PRESET_QUESTIONS = [
   "How does login work, and where does the request end up?",
   "How does an authenticated request load the current user?",

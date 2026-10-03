@@ -38,7 +38,7 @@ button.ghost {
 
 .app { height: 100%; position: relative; overflow: hidden; }
 
-.panel, .drawer, .legend, .blocker, .view-switch, .kg-controls, .kg-detail {
+.panel, .drawer, .legend, .blocker, .view-switch, .kg-controls, .kg-detail, .history-toggle, .timeline {
   background: rgba(8, 10, 16, 0.88);
   border: 1px solid rgba(54, 197, 255, 0.28);
   backdrop-filter: blur(10px);
@@ -176,6 +176,8 @@ form button { margin-top: 0.6rem; width: 100%; }
 .swatch.gold { background: #ffd400; }
 .swatch.red { background: #ff4d4d; }
 .swatch.orange { background: #ff8a3d; }
+.swatch.green { background: #4ade80; }
+.swatch.faint { background: rgba(154, 160, 180, 0.25); }
 
 .blocker {
   min-height: 100%;
@@ -261,11 +263,18 @@ form button { margin-top: 0.6rem; width: 100%; }
 
 .divider.off { flex-basis: 0; opacity: 0; pointer-events: none; }
 
-.view-switch {
+.topbar {
   position: absolute;
   left: 16px;
   top: 16px;
   z-index: 5;
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.view-switch {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   padding: 3px;
@@ -298,6 +307,57 @@ form button { margin-top: 0.6rem; width: 100%; }
 }
 
 .view-switch button:hover, .view-switch button.on { color: #ffffff; }
+
+.history-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #b7b9c7;
+  font-size: 0.82rem;
+  font-weight: 550;
+  padding: 0.4rem 0.8rem;
+  border-radius: 10px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.history-toggle i { width: 7px; height: 7px; border-radius: 99px; background: #9aa0b4; transition: background 0.15s, box-shadow 0.15s; }
+.history-toggle:hover, .history-toggle.on { color: #ffffff; }
+.history-toggle.past { color: #bbf7d0; border-color: rgba(74, 222, 128, 0.5); font-variant-numeric: tabular-nums; }
+.history-toggle.past i { background: #4ade80; box-shadow: 0 0 8px #4ade80; }
+
+/* The time machine drops below the top bar and drives both graphs. */
+.timeline {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 8px);
+  width: min(320px, calc(100vw - 32px));
+  padding: 10px 12px 12px;
+  border-radius: 14px;
+  font-size: 0.78rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: kg-in 0.18s ease-out;
+}
+
+.timeline-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.timeline-head strong { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: #36c5ff; font-weight: 600; }
+.timeline-head span { color: #8e93a6; }
+.spark { display: flex; align-items: flex-end; gap: 2px; height: 44px; }
+.spark .bar { flex: 1; min-width: 2px; padding: 0; border-radius: 2px 2px 0 0; background: rgba(154, 160, 180, 0.25); transition: background 0.15s; }
+.spark .bar:hover { background: rgba(231, 232, 238, 0.6); }
+.spark .bar.past { background: rgba(54, 197, 255, 0.45); }
+.spark .bar.on { background: #4ade80; }
+.timeline input[type="range"] { padding: 0; border: 0; background: transparent; accent-color: #36c5ff; }
+.commit { display: flex; flex-direction: column; gap: 2px; }
+.commit-date { color: #8e93a6; font-variant-numeric: tabular-nums; }
+.commit-date code { color: #36c5ff; }
+.commit-subject { color: #e7e8ee; line-height: 1.35; overflow-wrap: anywhere; }
+.commit-stats { color: #9aa0b4; }
+.commit-stats .add { color: #4ade80; }
+.commit-stats .del { color: #ff8a8a; }
+.timeline-actions { display: flex; gap: 6px; }
+.timeline-actions button { padding: 0.4rem 0.7rem; font-size: 0.8rem; }
 
 .mono { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; }
 
@@ -459,6 +519,13 @@ form button { margin-top: 0.6rem; width: 100%; }
 /* The view switch sits over whichever pane is top-left. */
 .mode-knowledge .kg-controls { top: 64px; max-height: calc(100% - 80px); }
 
+/* In split the code pane is narrow enough that the top bar reaches its agent panel. */
+.mode-split .panel { top: 64px; }
+
+@container codepane (min-width: 1001px) {
+  .mode-split .panel { max-height: calc(100% - 80px); }
+}
+
 @container codepane (max-width: 1000px) {
   .drawer { right: 16px; }
   .panel { width: min(340px, calc(100% - 32px)); max-height: calc(58% - 24px); }
@@ -512,11 +579,11 @@ form button { margin-top: 0.6rem; width: 100%; }
 }
 
 @media (max-width: 800px) {
-  .view-switch { left: 8px; top: 8px; }
-  .view-switch button { padding: 0.35rem 0.6rem; }
+  .topbar { left: 8px; top: 8px; }
+  .view-switch button, .history-toggle { padding: 0.35rem 0.6rem; }
   .mode-knowledge .kg-controls { top: 52px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pane, .pane.collapsed, .divider, .view-switch .pill, .kg-detail { transition: none; animation: none; }
+  .pane, .pane.collapsed, .divider, .view-switch .pill, .kg-detail, .timeline, .spark .bar { transition: none; animation: none; }
 }

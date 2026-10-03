@@ -15,6 +15,9 @@ type Props = {
   blast: Map<string, number> | null;
   blastOrigin: string | null;
   pulse: boolean;
+  // Time machine: snapshot index each node arrived at, and the snapshot on screen (null = today).
+  bornAt: Map<string, number> | null;
+  timeIndex: number | null;
   onClick: (node: GNode) => void;
   onReady: () => void;
   fgRef: RefObject<ForceGraphMethods | undefined>;
@@ -24,6 +27,10 @@ type Props = {
 
 function asLink(link: object): { source: string | { id?: string }; target: string | { id?: string } } {
   return link as { source: string | { id?: string }; target: string | { id?: string } };
+}
+
+function endId(end: string | { id?: string }): string {
+  return typeof end === "string" ? end : end.id ?? "";
 }
 
 function clusterColor(cluster: string): string {
@@ -41,6 +48,8 @@ export function Graph3D({
   blast,
   blastOrigin,
   pulse,
+  bornAt,
+  timeIndex,
   onClick,
   onReady,
   fgRef,
@@ -61,8 +70,18 @@ export function Graph3D({
     if (positioned) signal();
   }, [positioned, signal]);
 
+  const born = useCallback(
+    (id: string) => {
+      if (!bornAt || timeIndex == null) return true;
+      const at = bornAt.get(id);
+      return at == null || at <= timeIndex;
+    },
+    [bornAt, timeIndex],
+  );
+
   const nodeColor = useCallback(
     (node: GNode) => {
+      if (bornAt && timeIndex != null && bornAt.get(node.id) === timeIndex) return "#4ade80";
       if (blast) {
         if (node.id === blastOrigin) return "#ffd400";
         const distance = blast.get(node.id);
@@ -78,7 +97,7 @@ export function Graph3D({
       if (node.type === "external") return "#c084fc";
       return clusterColor(node.cluster);
     },
-    [active, blast, blastOrigin, candidates, current, path, pulse],
+    [active, blast, blastOrigin, bornAt, candidates, current, path, pulse, timeIndex],
   );
 
   return (
@@ -91,7 +110,10 @@ export function Graph3D({
       nodeAutoColorBy="cluster"
       nodeColor={nodeColor as (node: object) => string}
       nodeVal={(node: object) => SIZE[(node as GNode).type] ?? 2}
+      nodeVisibility={(node: object) => born((node as GNode).id)}
       linkVisibility={(link: object) => {
+        const ends = asLink(link);
+        if (!born(endId(ends.source)) || !born(endId(ends.target))) return false;
         const kind = (link as { type?: string }).type;
         return kind === "calls" || kind === "depends";
       }}
