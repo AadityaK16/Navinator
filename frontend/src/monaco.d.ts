@@ -1,1 +1,1 @@
-declare module "monaco-editor/esm/vs/languages/definitions/python/register.js";
+declare module "monaco-editor-css";

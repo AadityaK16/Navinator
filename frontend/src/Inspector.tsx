@@ -1,9 +1,8 @@
 import { useEffect, useRef } from "react";
 import Editor, { loader } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
-import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
-import "monaco-editor/esm/vs/languages/definitions/python/register.js";
-import "monaco-editor/min/vs/editor/editor.main.css";
+import editorWorker from "monaco-editor/editor/editor.worker?worker";
+import "monaco-editor-css";
 import type { NodeDetail } from "./types";
 
 self.MonacoEnvironment = {
