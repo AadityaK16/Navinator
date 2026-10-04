@@ -14,7 +14,7 @@ With no API key, `/ask` plays the saved tour for that question. Set `ANTHROPIC_A
 
 ## Run
 
-From the repo root, with Python 3.11+ and Node 22:
+From the repo root, with Python 3.11+ (ideally 3.12) and Node 22:
 
 ```bash
 python3 -m pip install -r backend/requirements.txt
