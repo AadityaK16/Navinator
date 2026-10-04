@@ -30,15 +30,31 @@ cd frontend && npm run dev
 
 The UI is at `http://127.0.0.1:43123`. The API is at `http://127.0.0.1:8741`. Copy `backend/.env.example` to `backend/.env` if you want a key or `DEMO_MODE=cached`.
 
-## Knowledge Graph
+## Private mode (local LLM)
 
-The **Knowledge Graph** toggle (top left) opens a 2D concept map of the demo repo: topics, architecture, concepts, design decisions and key functions. The map is curated in `backend/data/knowledge.json` and served by `/knowledge`; it makes no AI calls.
+Run the agent on a model on your own machine so no source code leaves it. Any server that speaks the OpenAI chat API with tool calling works: Ollama, LM Studio, llama.cpp server.
 
-The server decides which links are code facts. A `calls_into`, `depends_on` or `part_of` link is marked verified only when a matching `calls`, `depends`, `imports` or `contains` edge exists in `graph.json`, and it carries that edge as evidence. `calls_into` and `part_of` links with no matching edge are rejected. `implements`, `explains` and `related_to` links are always shown as conceptual. Nodes and links accept `"origin": "agent"` so generated relationships can later go through the same check.
+```bash
+ollama pull llama3.1:8b        # or qwen2.5:7b, which is stronger at tool calls
+LLM_PROVIDER=ollama LOCAL_MODEL=llama3.1:8b python3 -m uvicorn reponav.server:app --app-dir backend --port 8741
+```
+
+The UI shows a green "Private mode" badge when the model URL is localhost. Tours from the local model go through the same validator as the cloud model, so a weak model can never show a path that does not exist in the graph. If it fails or runs past two minutes, the saved tour plays instead.
+
+## Grok narration, voice, and regrouping
+
+Add `XAI_API_KEY` to `backend/.env` (optional: `XAI_MODEL`, default `grok-4`; `XAI_VOICE`, default `ara`). With a key:
+
+- Grok rewrites each tour stop's narration from the actual code, then reads it aloud. Pick the voice in the tour bar.
+- The Regroup tab asks Grok to reorganise the graph ("group by responsibility", "only the password code"). Every grouping stays in the list, including the original, so you can switch back.
+
+Without a key, tours use the saved narration and the browser voice, and Regroup keeps the code that matches your words. If a Grok call fails, the same fallbacks kick in and the UI says why.
+
+Tour controls: Back, Pause, Next, Exit tour, or ← → Space Esc. Up (or Esc) walks out one level: function, file, folder or group, everything. Home jumps to the full view.
 
 ## Time machine
 
-`backend/data/history.json` replays every commit that touched the backend (2019 to the pin) through the same parser. The History button next to the view switch scrubs both graphs through time: code nodes appear when their function, class, or file arrived, and concepts in the knowledge map appear with the code they describe. To rebuild it:
+`backend/data/history.json` replays every commit that touched the backend (2019 to the pin) through the same parser. The slider shows when each function, class, and file arrived. To rebuild it:
 
 ```bash
 git clone https://github.com/fastapi/full-stack-fastapi-template /tmp/fft
@@ -53,4 +69,4 @@ python3 -m reponav.parser ../demo-repo/backend data/graph.json
 python3 -m pytest
 ```
 
-`backend/data/layout.json` is a frozen layout. The UI loads it on startup so the graph does not reshuffle. After a parser change, delete `layout.json` once and reload; the view will settle and save a new layout.
+`backend/data/layout.json` is a frozen 3D layout made by `python3 -m reponav.layout3d` (run from `backend`): folders spread around a large sphere, files on a sphere inside their folder, symbols orbiting their file. Click a labelled file node, a folder chip, or "Open its file group" to fly into a group; Esc goes back out. The UI loads it on startup so the graph does not reshuffle. After a parser change, delete `layout.json` once and reload; the view will settle and save a new layout.

@@ -33,13 +33,6 @@ LAYOUTS = [
 # parenthesize before parsing, the same local fix demo-repo carries.
 PEP758 = re.compile(r"^(\s*except\s+)(\w+(?:\s*,\s*\w+)+)(\s*(?:as\s+\w+)?\s*:)", re.M)
 
-# The template prefixes commits with gitmoji, as ":sparkles:" or the glyph itself.
-GITMOJI = re.compile(r"^(?::\w+:|[^\w\s`\"'(\[])+\s*")
-
-
-def clean_subject(subject: str) -> str:
-    return GITMOJI.sub("", subject).strip()
-
 
 def git(repo: Path, *args: str) -> bytes:
     return subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True).stdout
@@ -89,7 +82,7 @@ def build(repo: Path, pin: str) -> dict:
                 "sha": meta[0],
                 "date": meta[1][:10],
                 "author": meta[2],
-                "subject": clean_subject(meta[3])[:120],
+                "subject": meta[3][:120],
                 "nodes": len(ids),
                 "edges": sum(1 for link in links if link["type"] in ("calls", "depends")),
                 "files": sum(1 for nid in ids if nodes[nid]["type"] == "file"),

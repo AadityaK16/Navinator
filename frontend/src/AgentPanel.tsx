@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { PRESET_QUESTIONS, type SearchHit } from "./types";
 
 type Props = {
@@ -12,6 +13,9 @@ type Props = {
   onSearch: (value: string) => void;
   hits: SearchHit[];
   onJump: (id: string) => void;
+  tab: "tour" | "regroup";
+  onTab: (tab: "tour" | "regroup") => void;
+  regroup: ReactNode;
 };
 
 export function AgentPanel({
@@ -26,12 +30,33 @@ export function AgentPanel({
   onSearch,
   hits,
   onJump,
+  tab,
+  onTab,
+  regroup,
 }: Props) {
   const askDisabled = !ready || asking || !question.trim();
   return (
     <aside className="panel">
       <p className="kicker">Call path</p>
       <h1>RepoNav</h1>
+      <div className="tabs" role="tablist">
+        <button type="button" role="tab" aria-selected={tab === "tour"} className={tab === "tour" ? "tab on" : "tab"} onClick={() => onTab("tour")}>
+          Ask & tour
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === "regroup"}
+          className={tab === "regroup" ? "tab on" : "tab"}
+          onClick={() => onTab("regroup")}
+        >
+          Regroup
+        </button>
+      </div>
+      {tab === "regroup" ? (
+        regroup
+      ) : (
+        <>
       <p className="lede">Follow a real call path through this backend.</p>
       <form
         onSubmit={(event) => {
@@ -84,6 +109,8 @@ export function AgentPanel({
           <p key={`${index}-${line}`}>{line}</p>
         ))}
       </div>
+        </>
+      )}
     </aside>
   );
 }

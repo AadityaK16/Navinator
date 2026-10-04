@@ -59,38 +59,11 @@ export type SearchHit = {
 
 export type BlastHit = { id: string; distance: number };
 
-export type KnowledgeKind = "architecture" | "concept" | "function" | "decision" | "topic";
-export type KnowledgeRelation = "depends_on" | "implements" | "related_to" | "explains" | "calls_into" | "part_of";
-
-export type KNode = {
-  id: string;
-  kind: KnowledgeKind;
-  title: string;
-  summary: string;
-  cluster: string;
-  code_refs: string[];
-  origin: "curated" | "agent";
-  x?: number;
-  y?: number;
-};
-
-// verified and evidence come from the server's check against the call graph, never from the curated file.
-export type KLink = {
-  source: string | KNode;
-  target: string | KNode;
-  relation: KnowledgeRelation;
-  verified: boolean;
-  evidence: string | null;
-  note: string;
-  origin: "curated" | "agent";
-};
-
-export type KnowledgeData = {
-  clusters: { id: string; label: string }[];
-  nodes: KNode[];
-  links: KLink[];
-  rejected: { id: string; reason: string }[];
-};
+export const PRESET_QUESTIONS = [
+  "How does login work, and where does the request end up?",
+  "How does an authenticated request load the current user?",
+  "How is a new user created?",
+] as const;
 
 export type Snapshot = {
   sha: string;
@@ -104,11 +77,17 @@ export type Snapshot = {
   removed: string[];
 };
 
-// born_at maps each code node id to the snapshot index where it last appeared.
 export type History = { pin: string; snapshots: Snapshot[]; born_at: Record<string, number> };
 
-export const PRESET_QUESTIONS = [
-  "How does login work, and where does the request end up?",
-  "How does an authenticated request load the current user?",
-  "How is a new user created?",
-] as const;
+export type GrokConfig = { chat: boolean; voice: boolean; model: string; voices: string[]; default_voice: string };
+
+export type ModelConfig = { provider: string; model: string; on_device: boolean; live: boolean; grok?: GrokConfig };
+
+export type RegroupResult = {
+  title: string;
+  summary: string;
+  groups: { name: string; why: string; members: string[] }[];
+  hidden: string[];
+  source: string;
+  note?: string;
+};

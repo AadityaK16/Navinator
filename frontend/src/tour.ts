@@ -9,18 +9,49 @@ export function linkKey(link: { source: string | { id?: string }; target: string
   return `${id(link.source)}->${id(link.target)}`;
 }
 
-export function flyTo(fg: ForceGraphMethods | undefined, node: CameraNode, ms = 1600): Promise<void> {
+export function flyTo(fg: ForceGraphMethods | undefined, node: CameraNode, ms = 1600, dist = 180): Promise<void> {
   return new Promise((resolve) => {
     const x = node.x ?? 0;
     const y = node.y ?? 0;
     const z = node.z ?? 0;
     if (fg) {
-      const dist = 90;
       const r = 1 + dist / Math.hypot(x || 1, y || 1, z || 1);
       fg.cameraPosition({ x: x * r, y: y * r, z: z * r }, { x, y, z }, ms);
     }
     window.setTimeout(resolve, ms);
   });
+}
+
+// Frame a set of nodes: fly to their centre, keep the current viewing angle,
+// and back off far enough that the whole set fits on screen.
+export function frameNodes(fg: ForceGraphMethods | undefined, nodes: CameraNode[], ms = 1100, room = 1): void {
+  if (!fg || nodes.length === 0) return;
+  let cx = 0;
+  let cy = 0;
+  let cz = 0;
+  nodes.forEach((n) => {
+    cx += n.x ?? 0;
+    cy += n.y ?? 0;
+    cz += n.z ?? 0;
+  });
+  cx /= nodes.length;
+  cy /= nodes.length;
+  cz /= nodes.length;
+  let radius = 0;
+  nodes.forEach((n) => {
+    radius = Math.max(radius, Math.hypot((n.x ?? 0) - cx, (n.y ?? 0) - cy, (n.z ?? 0) - cz));
+  });
+  const camera = fg.camera() as unknown as { position: { x: number; y: number; z: number }; fov?: number };
+  let dx = camera.position.x - cx;
+  let dy = camera.position.y - cy;
+  let dz = camera.position.z - cz;
+  const len = Math.hypot(dx, dy, dz) || 1;
+  dx /= len;
+  dy /= len;
+  dz /= len;
+  const fov = ((camera.fov ?? 50) * Math.PI) / 180;
+  const distance = Math.max(340, ((radius + 40) / Math.tan(fov / 2)) * room);
+  fg.cameraPosition({ x: cx + dx * distance, y: cy + dy * distance, z: cz + dz * distance }, { x: cx, y: cy, z: cz }, ms);
 }
 
 export function speak(text: string): Promise<void> {

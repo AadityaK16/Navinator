@@ -8,12 +8,12 @@ from collections.abc import AsyncIterator
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel
 
-from .agent import run_agent
+from .agent import LOCAL_PROVIDERS, provider, run_agent
+from . import grok
 from .graph import DATA, GRAPH, NODES, blast_radius, node_source, search_codebase
-from .knowledge import load_knowledge
 
 app = FastAPI(title="RepoNav")
 app.add_middleware(
@@ -24,14 +24,16 @@ app.add_middleware(
 )
 
 CACHED = json.loads((DATA / "demo_tours.json").read_text())
-KNOWLEDGE = load_knowledge()
 HISTORY_PATH = DATA / "history.json"
 ACTION_TIMEOUT_S = 25
+LOCAL_ACTION_TIMEOUT_S = 120
 
 
 def use_live_agent() -> bool:
     if os.environ.get("DEMO_MODE") == "cached":
         return False
+    if provider() in LOCAL_PROVIDERS:
+        return True
     return bool(os.environ.get("ANTHROPIC_API_KEY"))
 
 
@@ -84,7 +86,8 @@ async def guarded(q: str) -> AsyncIterator[dict]:
             yield action
             if action["type"] == "tour":
                 return
-            if time.monotonic() - start > ACTION_TIMEOUT_S:
+            limit = LOCAL_ACTION_TIMEOUT_S if provider() in LOCAL_PROVIDERS else ACTION_TIMEOUT_S
+            if time.monotonic() - start > limit:
                 raise TimeoutError
     except Exception:
         yield {"type": "status", "message": "Using saved route"}
@@ -131,16 +134,64 @@ def graph():
     return graph_payload()
 
 
-@app.get("/knowledge")
-def knowledge():
-    return KNOWLEDGE
-
-
 @app.get("/history")
 def history():
     if not HISTORY_PATH.exists():
         raise HTTPException(status_code=404, detail="no history; run python -m reponav.history")
     return json.loads(HISTORY_PATH.read_text())
+
+
+@app.get("/config")
+def config():
+    from .agent import provider_info
+
+    info = provider_info()
+    info["live"] = use_live_agent()
+    info["grok"] = grok.grok_info()
+    return info
+
+
+class NarrateBody(BaseModel):
+    question: str = ""
+    stops: list[dict]
+
+
+@app.post("/narrate")
+async def narrate(body: NarrateBody):
+    stops, source, error = await grok.narrate(body.question, body.stops)
+    return {"stops": stops, "source": source, "error": error}
+
+
+class SpeakBody(BaseModel):
+    text: str
+    voice: str | None = None
+
+
+@app.post("/speak")
+async def speak(body: SpeakBody):
+    if not grok.xai_key():
+        raise HTTPException(status_code=503, detail="XAI_API_KEY is not set")
+    try:
+        audio, mime = await grok.speak(body.text, body.voice)
+    except grok.GrokError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    return Response(content=audio, media_type=mime, headers={"Cache-Control": "no-store"})
+
+
+class RegroupBody(BaseModel):
+    prompt: str
+    current: dict | None = None
+
+
+@app.post("/regroup")
+async def regroup(body: RegroupBody):
+    prompt = body.prompt.strip()
+    if not prompt:
+        raise HTTPException(status_code=400, detail="Say how you want the code grouped.")
+    try:
+        return await grok.regroup(prompt, body.current)
+    except grok.GrokError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @app.get("/search")

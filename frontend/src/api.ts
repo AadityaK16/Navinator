@@ -1,4 +1,4 @@
-import type { Action, BlastHit, GraphData, History, KnowledgeData, NodeDetail, SearchHit } from "./types";
+import type { Action, BlastHit, GraphData, History, ModelConfig, NodeDetail, RegroupResult, SearchHit, TourStop } from "./types";
 
 const BASE = import.meta.env.VITE_API_BASE ?? "http://127.0.0.1:8741";
 
@@ -14,12 +14,12 @@ export function fetchGraph(): Promise<GraphData> {
   return getJson("/graph");
 }
 
-export function fetchKnowledge(): Promise<KnowledgeData> {
-  return getJson("/knowledge");
-}
-
 export function fetchHistory(): Promise<History> {
   return getJson("/history");
+}
+
+export function fetchConfig(): Promise<ModelConfig> {
+  return getJson("/config");
 }
 
 export function fetchNode(id: string): Promise<NodeDetail> {
@@ -64,4 +64,55 @@ export function ask(q: string, onAction: (action: Action) => void): () => void {
     });
   };
   return finish;
+}
+
+async function postJson<T>(path: string, body: unknown): Promise<T> {
+  const response = await fetch(`${BASE}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!response.ok) {
+    let detail = `${response.status} ${response.statusText}`;
+    try {
+      const data = (await response.json()) as { detail?: string };
+      if (data.detail) detail = data.detail;
+    } catch {
+      // keep the status line
+    }
+    throw new Error(detail);
+  }
+  return response.json() as Promise<T>;
+}
+
+export function narrateTour(
+  question: string,
+  stops: TourStop[],
+): Promise<{ stops: TourStop[]; source: string; error: string | null }> {
+  return postJson("/narrate", { question, stops });
+}
+
+export async function fetchSpeech(text: string, voice: string): Promise<Blob> {
+  const response = await fetch(`${BASE}/speak`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text, voice }),
+  });
+  if (!response.ok) {
+    let detail = `${response.status}`;
+    try {
+      detail = ((await response.json()) as { detail?: string }).detail ?? detail;
+    } catch {
+      // keep the status code
+    }
+    throw new Error(detail);
+  }
+  return response.blob();
+}
+
+export function regroup(
+  prompt: string,
+  current: { title: string; groups: { name: string; members: string[] }[] } | null,
+): Promise<RegroupResult> {
+  return postJson("/regroup", { prompt, current });
 }
