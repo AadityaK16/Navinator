@@ -1,6 +1,6 @@
 # Navinator
 
-RepoNav answers a question about one Python backend by walking only real call and dependency edges. Each stop shows the function source and the file and line of the hop that got you there.
+Navinator answers a question about one Python backend by walking only real call and dependency edges. Each stop shows the function source and the file and line of the hop that got you there.
 
 The preloaded repo is [full-stack-fastapi-template](https://github.com/fastapi/full-stack-fastapi-template) at `1762adac607a1b29cfc4da129557780beea71616` (`demo-repo/PIN`). `demo-repo/backend/app/api/deps.py` parenthesizes one `except` clause so Python 3.12 can parse the module. Line numbers are unchanged.
 
@@ -19,7 +19,7 @@ From the repo root, with Python 3.11+ (ideally 3.12) and Node 22:
 ```bash
 python3 -m pip install -r backend/requirements.txt
 cd frontend && npm install && cd ..
-python3 -m uvicorn reponav.server:app --app-dir backend --host 0.0.0.0 --port 8741
+python3 -m uvicorn navinator.server:app --app-dir backend --host 0.0.0.0 --port 8741
 ```
 
 In another shell:
@@ -42,7 +42,7 @@ Run the agent on a model on your own machine so no source code leaves it. Any se
 
 ```bash
 ollama pull llama3.1:8b        # or qwen2.5:7b, which is stronger at tool calls
-LLM_PROVIDER=ollama LOCAL_MODEL=llama3.1:8b python3 -m uvicorn reponav.server:app --app-dir backend --port 8741
+LLM_PROVIDER=ollama LOCAL_MODEL=llama3.1:8b python3 -m uvicorn navinator.server:app --app-dir backend --port 8741
 ```
 
 The UI shows a green "Private mode" badge when the model URL is localhost. Tours from the local model go through the same validator as the cloud model, so a weak model can never show a path that does not exist in the graph. If it fails or runs past two minutes, the saved tour plays instead.
@@ -64,15 +64,15 @@ Tour controls: Back, Pause, Next, Exit tour, or ← → Space Esc. Up (or Esc) w
 
 ```bash
 git clone https://github.com/fastapi/full-stack-fastapi-template /tmp/fft
-cd backend && python3 -m reponav.history /tmp/fft $(head -1 ../demo-repo/PIN) data/history.json
+cd backend && python3 -m navinator.history /tmp/fft $(head -1 ../demo-repo/PIN) data/history.json
 ```
 
 ## Regenerate the graph
 
 ```bash
 cd backend
-python3 -m reponav.parser ../demo-repo/backend data/graph.json
+python3 -m navinator.parser ../demo-repo/backend data/graph.json
 python3 -m pytest
 ```
 
-`backend/data/layout.json` is a frozen 3D layout made by `python3 -m reponav.layout3d` (run from `backend`): folders spread around a large sphere, files on a sphere inside their folder, symbols orbiting their file. Click a labelled file node, a folder chip, or "Open its file group" to fly into a group; Esc goes back out. The UI loads it on startup so the graph does not reshuffle. After a parser change, delete `layout.json` once and reload; the view will settle and save a new layout.
+`backend/data/layout.json` is a frozen 3D layout made by `python3 -m navinator.layout3d` (run from `backend`): folders spread around a large sphere, files on a sphere inside their folder, symbols orbiting their file. Click a labelled file node, a folder chip, or "Open its file group" to fly into a group; Esc goes back out. The UI loads it on startup so the graph does not reshuffle. After a parser change, delete `layout.json` once and reload; the view will settle and save a new layout.
