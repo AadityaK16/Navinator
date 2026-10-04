@@ -97,3 +97,5 @@ export type RepoKind = "demo" | "sample" | "upload";
 export type RepoInfo = { id: string; name: string; kind: RepoKind; files: number | null };
 
 export type RepoList = { active: string; repos: RepoInfo[] };
+
+export type ArchitectureInfo = { files: Record<string, { role: string; tech: string[]; doc: string }> };

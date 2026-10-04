@@ -1,4 +1,4 @@
-import type { Action, BlastHit, GraphData, History, ModelConfig, NodeDetail, RegroupResult, RepoList, SearchHit, TourStop } from "./types";
+import type { Action, ArchitectureInfo, BlastHit, GraphData, History, ModelConfig, NodeDetail, RegroupResult, RepoList, SearchHit, TourStop } from "./types";
 
 const BASE = import.meta.env.VITE_API_BASE ?? "http://127.0.0.1:8741";
 
@@ -115,6 +115,10 @@ export function regroup(
   current: { title: string; groups: { name: string; members: string[] }[] } | null,
 ): Promise<RegroupResult> {
   return postJson("/regroup", { prompt, current });
+}
+
+export function fetchArchitecture(): Promise<ArchitectureInfo> {
+  return getJson("/architecture");
 }
 
 export function fetchRepos(): Promise<RepoList> {

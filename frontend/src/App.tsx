@@ -1,8 +1,10 @@
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { ForceGraphMethods } from "react-force-graph-3d";
-import { ask, fetchBlast, fetchConfig, fetchGraph, fetchHistory, fetchNode, fetchSearch, narrateTour, regroup } from "./api";
+import { ask, fetchArchitecture, fetchBlast, fetchConfig, fetchGraph, fetchHistory, fetchNode, fetchSearch, narrateTour, regroup } from "./api";
 import { AgentPanel } from "./AgentPanel";
 import { EDGE_ORDER, EDGE_STYLE, buildFileColors, colorForNode } from "./colors";
+import { Diagram2D } from "./Diagram2D";
+import { buildDiagram, type Box, type BoxSeed } from "./diagram";
 import { Graph3D, type GraphGrouping } from "./Graph3D";
 import { animateTo, fromResult, type CustomGroup, type Grouping, type Vec } from "./grouping";
 import { GroupPanel, type Group, type Neighbour } from "./GroupPanel";
@@ -13,7 +15,7 @@ import { Timeline } from "./Timeline";
 import { CodeView } from "./CodeView";
 import { flyTo, frameNodes } from "./tour";
 import { TourBar } from "./TourBar";
-import type { GNode, GraphData, History, LinkType, ModelConfig, NodeDetail, RepoInfo, SearchHit, TourStop } from "./types";
+import type { ArchitectureInfo, GNode, GraphData, History, LinkType, ModelConfig, NodeDetail, RepoInfo, SearchHit, TourStop } from "./types";
 import { useTour } from "./useTour";
 import { stopAllSpeech, type VoiceChoice } from "./voice";
 
@@ -92,6 +94,10 @@ export default function App({ repo, repoPicker }: { repo: RepoInfo; repoPicker: 
   const [regroupBusy, setRegroupBusy] = useState(false);
   const [regroupError, setRegroupError] = useState<string | null>(null);
   const [codeView, setCodeView] = useState(false);
+  const [view, setView] = useState<"3d" | "2d">("3d");
+  const [arch, setArch] = useState<ArchitectureInfo | null>(null);
+  const [startFrom, setStartFrom] = useState<string | null>(null);
+  const [fitSignal, setFitSignal] = useState(0);
   const [panelCollapsed, setPanelCollapsed] = usePersisted("reponav.panelCollapsed", false);
   const [railCollapsed, setRailCollapsed] = usePersisted("reponav.railCollapsed", false);
 
@@ -100,6 +106,7 @@ export default function App({ repo, repoPicker }: { repo: RepoInfo; repoPicker: 
 
   useEffect(() => {
     fetchHistory().then(setHistory).catch(() => setHistory(null));
+    fetchArchitecture().then(setArch).catch(() => setArch(null));
     fetchConfig()
       .then((config) => {
         setModelConfig(config);
@@ -517,6 +524,106 @@ export default function App({ repo, repoPicker }: { repo: RepoInfo; repoPicker: 
     frameAll();
   }
 
+  // ------------------------------------------------------------ 2D diagram
+
+  const diagram = useMemo(() => {
+    if (!graph) return null;
+    const seeds: BoxSeed[] = [];
+    graph.nodes
+      .filter((n) => n.type === "external")
+      .forEach((n) =>
+        seeds.push({ key: `entry:${n.id}`, kind: "entry", title: "Browser", role: "Entry point", tech: [n.label], color: "#c084fc", ids: new Set([n.id]) }),
+      );
+    if (custom) {
+      custom.groups.forEach((g) => {
+        const ids = new Set(g.members.filter((id) => nodesById[id]?.type !== "external"));
+        if (ids.size) seeds.push({ key: g.key, kind: "custom", title: g.name, role: "Group", tech: [], color: g.color, ids });
+      });
+    } else {
+      fileGroups.forEach((group) => {
+        const info = arch?.files[group.key];
+        seeds.push({
+          key: group.key,
+          kind: "file",
+          title: group.title.replace(/\.py$/, "").replace(/^__init__$/, `${group.key.split("/").slice(-2, -1)[0] ?? ""}/`),
+          role: info?.role ?? "Module",
+          tech: info?.tech ?? [],
+          color: groupColor(group),
+          ids: group.ids,
+        });
+      });
+    }
+    return buildDiagram(seeds, graph.links, custom?.hidden ?? new Set());
+  }, [arch, custom, fileGroups, graph, groupColor, nodesById]);
+
+  const entryBoxes = useMemo(() => diagram?.boxes.filter((b) => b.kind === "entry") ?? [], [diagram]);
+
+  const boxKeysFor = useCallback(
+    (ids: Iterable<string>) => {
+      const keys = new Set<string>();
+      if (!diagram) return keys;
+      for (const id of ids) {
+        const key = diagram.boxOf.get(id);
+        if (key) keys.add(key);
+      }
+      return keys;
+    },
+    [diagram],
+  );
+
+  const diagramFocus = useMemo(() => {
+    if (nodeFocusId) return boxKeysFor([nodeFocusId]);
+    if (focus) return boxKeysFor(focus.ids);
+    return null;
+  }, [boxKeysFor, focus, nodeFocusId]);
+
+  const diagramTour = useMemo(() => {
+    if (!diagram || !tourCtl.tour) return [] as string[];
+    const keys: string[] = [];
+    tourCtl.tour.stops.forEach((stop) => {
+      const key = diagram.boxOf.get(stop.node_id);
+      if (key && keys[keys.length - 1] !== key) keys.push(key);
+    });
+    return keys;
+  }, [diagram, tourCtl.tour]);
+
+  const diagramBlast = useMemo(() => {
+    if (!blast || !diagram) return null;
+    const hops = new Map<string, number>();
+    if (currentId) {
+      const origin = diagram.boxOf.get(currentId);
+      if (origin) hops.set(origin, 0);
+    }
+    blast.forEach((distance, id) => {
+      const key = diagram.boxOf.get(id);
+      if (key && (hops.get(key) ?? 99) > distance) hops.set(key, distance);
+    });
+    return hops;
+  }, [blast, currentId, diagram]);
+
+  function switchView(next: "3d" | "2d") {
+    setView(next);
+    if (next === "2d") setFitSignal((n) => n + 1);
+  }
+
+  function onBoxClick(box: Box) {
+    if (box.kind === "entry") {
+      const id = [...box.ids][0];
+      setStartFrom((current) => (current === box.key ? null : box.key));
+      if (id) void openNode(id, false);
+      return;
+    }
+    if (box.kind === "custom") {
+      const group = customGroups.get(box.key);
+      if (group) focusGroup(group);
+      return;
+    }
+    const group = fileGroups.get(box.key);
+    if (group) focusGroup(group);
+    const fileNode = [...box.ids].map((id) => nodesById[id]).find((n) => n?.type === "file");
+    if (fileNode) void openNode(fileNode.id, false);
+  }
+
   const canGoUp = Boolean(codeView || tourCtl.tour || nodeFocusId || focus || blast);
 
   const crumbs = useMemo<Crumb[]>(() => {
@@ -671,6 +778,7 @@ export default function App({ repo, repoPicker }: { repo: RepoInfo; repoPicker: 
 
   return (
     <main className="app">
+      <div className={view === "3d" ? "view3d" : "view3d hidden"}>
       <Graph3D
         data={graph}
         path={path}
@@ -690,8 +798,53 @@ export default function App({ repo, repoPicker }: { repo: RepoInfo; repoPicker: 
         onReady={onReady}
         fgRef={fgRef}
       />
+      </div>
+      {view === "2d" && !codeView && diagram && (
+        <Diagram2D
+          diagram={diagram}
+          focusKeys={diagramFocus}
+          tourPath={diagramTour}
+          currentBox={tourCtl.tour && currentId ? diagram.boxOf.get(currentId) ?? null : null}
+          currentLabel={tourCtl.tour && currentId ? nodesById[currentId]?.label ?? null : null}
+          blast={diagramBlast}
+          edgeTypes={edgeTypes}
+          startFrom={startFrom}
+          fitSignal={fitSignal}
+          insets={{
+            left: railCollapsed ? 40 : 330,
+            right: panelCollapsed ? 200 : 430,
+            top: tourCtl.tour ? 210 : 124,
+            bottom: drawerOpen && detail ? Math.round(window.innerHeight * 0.32) + 130 : 100,
+          }}
+          onBoxClick={onBoxClick}
+        />
+      )}
       <div className="topcenter">
-        <NavBar crumbs={crumbs} onUp={goUp} onHome={goHome} canGoUp={canGoUp} codeView={codeView} onCodeView={() => setCodeView(!codeView)} />
+        <NavBar crumbs={crumbs} onUp={goUp} onHome={goHome} canGoUp={canGoUp} codeView={codeView} onCodeView={() => setCodeView(!codeView)} view={view} onView={switchView} />
+        {view === "2d" && !codeView && !tourCtl.tour && entryBoxes.length > 0 && (
+          <div className="startbar">
+            <span>Start from</span>
+            {entryBoxes.map((box) => (
+              <button
+                key={box.key}
+                type="button"
+                className={startFrom === box.key ? "chip on active" : "chip on"}
+                onClick={() => setStartFrom((current) => (current === box.key ? null : box.key))}
+              >
+                <i style={{ background: box.color }} />
+                {box.tech[0]}
+              </button>
+            ))}
+            {startFrom && (
+              <button type="button" className="chip" onClick={() => setStartFrom(null)}>
+                Show everything
+              </button>
+            )}
+            <button type="button" className="chip" onClick={() => setFitSignal((n) => n + 1)} title="Fit the diagram to the screen">
+              ⤢ Fit
+            </button>
+          </div>
+        )}
         {tourCtl.tour && (
           <TourBar
             stops={tourCtl.tour.stops}
@@ -716,7 +869,7 @@ export default function App({ repo, repoPicker }: { repo: RepoInfo; repoPicker: 
         )}
       </div>
       {codeView && <CodeView nodes={graph.nodes} selected={detail} colorOf={(path) => fileColors.get(path)} />}
-      {!codeView && (
+      {!codeView && view === "3d" && (
         <div className="zoom" role="group" aria-label="Zoom">
           <button type="button" className="ghost" title="Zoom in" aria-label="Zoom in" onClick={() => zoom(0.7)}>
             +
@@ -803,7 +956,14 @@ export default function App({ repo, repoPicker }: { repo: RepoInfo; repoPicker: 
                   />
                 )}
                 <ul className="legend">
-                  {blast ? (
+                  {view === "2d" && !blast ? (
+                    <>
+                      <li><i className="swatch ring" /> {custom ? "Circle = one of your groups" : "Circle = one file"}</li>
+                      {entryBoxes.length > 0 && <li><i className="swatch violet" /> Browser request (start)</li>}
+                      <li><i className="swatch line" /> Arrows = how data travels</li>
+                      <li><i className="swatch cyan" /> Tour path</li>
+                    </>
+                  ) : blast ? (
                     <>
                       <li><i className="swatch red" /> 1 hop</li>
                       <li><i className="swatch orange" /> 2 hops</li>
@@ -831,7 +991,7 @@ export default function App({ repo, repoPicker }: { repo: RepoInfo; repoPicker: 
                 </ul>
                 <section className="edges" aria-label="Connection types">
                   <strong>Connections</strong>
-                  {EDGE_ORDER.map((kind) => (
+                  {EDGE_ORDER.filter((kind) => view === "3d" || kind === "calls" || kind === "depends").map((kind) => (
                     <button
                       key={kind}
                       type="button"
@@ -865,10 +1025,24 @@ export default function App({ repo, repoPicker }: { repo: RepoInfo; repoPicker: 
                         {group.title}
                       </button>
                     ))}
-                    <span className="tip">Or click any labelled file node to open its group.</span>
+                    <span className="tip">{view === "2d" ? "Or click any circle to open it." : "Or click any labelled file node to open its group."}</span>
                   </section>
                 )}
-                {history && !focus && !custom && (
+                {view === "2d" && diagram && !focus && diagram.offPath.some((b) => b.ids.size > 1) && (
+                  <section className="edges" aria-label="Files not on a request path">
+                    <strong>Not on a request path</strong>
+                    {diagram.offPath
+                      .filter((b) => b.ids.size > 1)
+                      .map((b) => (
+                        <button key={b.key} type="button" className="chip on" onClick={() => onBoxClick(b)} title={b.key}>
+                          <i style={{ background: b.color }} />
+                          {b.key.replace(/^app\//, "")}
+                        </button>
+                      ))}
+                    <span className="tip">Nothing in a request calls into these files directly.</span>
+                  </section>
+                )}
+                {history && !focus && !custom && view === "3d" && (
                   <Timeline history={history} index={timeIndex} onIndex={setTimeIndex} playing={playing} onPlaying={setPlaying} />
                 )}
               </>

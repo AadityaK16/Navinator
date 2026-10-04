@@ -206,6 +206,13 @@ async def regroup(body: RegroupBody):
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
+@app.get("/architecture")
+def architecture_view():
+    from .architecture import architecture
+
+    return architecture()
+
+
 @app.get("/search")
 def search(q: str = ""):
     return search_codebase(q)

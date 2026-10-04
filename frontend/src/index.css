@@ -526,3 +526,82 @@ button.collapse-btn:hover { color: #e7e8ee; }
 .cv-main header { display: flex; align-items: baseline; gap: 12px; padding: 10px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
 .cv-main header strong { font-size: 0.9rem; }
 .cv-main > section, .cv-main > div { flex: 1; min-height: 0; }
+
+/* ---------- 3D / 2D switch ---------- */
+.view3d.hidden { visibility: hidden; pointer-events: none; }
+.viewswitch { display: flex; padding: 2px; border-radius: 9px; background: rgba(255, 255, 255, 0.06); }
+.viewswitch button { padding: 0.32rem 0.7rem; font-size: 0.8rem; background: transparent; color: #9aa0b4; font-weight: 650; border-radius: 7px; }
+.viewswitch button.on { background: #36c5ff; color: #041018; }
+.startbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 8px;
+  background: rgba(8, 10, 16, 0.9);
+  border: 1px solid rgba(54, 197, 255, 0.28);
+  border-radius: 12px;
+  font-size: 0.78rem;
+  color: #9aa0b4;
+}
+.startbar > span { padding: 0 4px; letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.7rem; }
+.startbar .chip.active { border-color: #c084fc; background: rgba(192, 132, 252, 0.18); color: #f3e8ff; }
+.swatch.line { width: 1rem; height: 3px; border-radius: 2px; background: linear-gradient(90deg, #86efac 50%, #f9a8d4 50%); }
+
+/* ---------- 2D diagram ---------- */
+.diagram {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 55% 40%, #0d1220 0%, #05060a 70%);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.diagram:active { cursor: grabbing; }
+.diagram svg { display: block; }
+.d-box { cursor: pointer; transition: opacity 0.25s; }
+.d-box.dim { opacity: 0.22; }
+.d-box:hover > circle:nth-of-type(1), .d-box:focus-visible > circle:first-of-type { filter: brightness(1.08); }
+.d-box:focus { outline: none; }
+.d-title { font-weight: 750; fill: #141824; font-family: "Segoe UI", "Helvetica Neue", sans-serif; }
+.d-role { fill: #3b4152; font-weight: 600; letter-spacing: 0.02em; font-family: "Segoe UI", "Helvetica Neue", sans-serif; }
+.d-count { fill: #e7e8ee; font-weight: 700; font-family: "Segoe UI", sans-serif; }
+.d-pill rect { fill: rgba(16, 19, 27, 0.92); stroke: rgba(255, 255, 255, 0.18); }
+.d-pill text { fill: #cfd3e1; font-weight: 600; font-family: "Segoe UI", sans-serif; }
+.d-pill.entry rect { stroke: rgba(192, 132, 252, 0.6); }
+.d-pill.entry text { fill: #ead9ff; font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; }
+.d-stop rect { fill: #ffd400; }
+.d-stop text { fill: #1a1400; font-weight: 750; font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; }
+.d-edge path { transition: stroke-opacity 0.25s; }
+.d-offpath {
+  position: absolute;
+  left: 322px;
+  bottom: 104px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  max-width: calc(100% - 760px);
+  font-size: 0.74rem;
+  color: #8e93a6;
+}
+.d-offpath .chip { font-size: 0.72rem; padding: 3px 8px; }
+.d-hint { position: absolute; right: 428px; bottom: 100px; color: #5d6275; font-size: 0.74rem; pointer-events: none; }
+@media (max-width: 1100px) {
+  .d-offpath, .d-hint { display: none; }
+}
+
+.d-empty {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: center;
+  color: #9aa0b4;
+  font-size: 0.86rem;
+}
+.d-empty strong { color: #e7e8ee; font-size: 1rem; }

@@ -7,11 +7,21 @@ type Props = {
   canGoUp: boolean;
   codeView: boolean;
   onCodeView: () => void;
+  view: "3d" | "2d";
+  onView: (view: "3d" | "2d") => void;
 };
 
-export function NavBar({ crumbs, onUp, onHome, canGoUp, codeView, onCodeView }: Props) {
+export function NavBar({ crumbs, onUp, onHome, canGoUp, codeView, onCodeView, view, onView }: Props) {
   return (
     <nav className="navbar" aria-label="Where you are">
+      <div className="viewswitch" role="tablist" aria-label="View">
+        <button type="button" role="tab" aria-selected={view === "3d"} className={view === "3d" ? "on" : ""} onClick={() => onView("3d")}>
+          3D
+        </button>
+        <button type="button" role="tab" aria-selected={view === "2d"} className={view === "2d" ? "on" : ""} onClick={() => onView("2d")}>
+          2D flow
+        </button>
+      </div>
       <button type="button" className="nav-btn" onClick={onUp} disabled={!canGoUp} title="Up one level (Esc)">
         <span aria-hidden>↑</span> Up
       </button>
