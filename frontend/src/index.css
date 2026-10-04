@@ -213,6 +213,9 @@ form button { margin-top: 0.6rem; width: 100%; }
 .commit-stats .del { color: #ff8a8a; }
 .timeline-actions { display: flex; gap: 6px; }
 .timeline-actions button { padding: 0.4rem 0.7rem; font-size: 0.8rem; }
+.speed { display: flex; gap: 2px; margin-left: auto; padding: 2px; border-radius: 8px; background: rgba(255, 255, 255, 0.05); }
+.timeline-actions .speed button { background: transparent; color: #9aa0b4; font-weight: 600; padding: 0.3rem 0.5rem; font-size: 0.75rem; }
+.timeline-actions .speed button.on { background: rgba(54, 197, 255, 0.18); color: #e7f7ff; }
 
 .rail > .group-panel {
   background: rgba(8, 10, 16, 0.92);

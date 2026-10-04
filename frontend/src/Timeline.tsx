@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { History } from "./types";
 
 type Props = {
@@ -10,12 +10,20 @@ type Props = {
 };
 
 const STEP_MS = 900;
+const SPEEDS = [1, 1.5, 2] as const;
+const SPEED_KEY = "reponav.replaySpeed";
+
+function savedSpeed(): number {
+  const value = Number(window.localStorage.getItem(SPEED_KEY));
+  return SPEEDS.includes(value as (typeof SPEEDS)[number]) ? value : 1;
+}
 
 export function Timeline({ history, index, onIndex, playing, onPlaying }: Props) {
   const last = history.snapshots.length - 1;
   const at = index ?? last;
   const snap = history.snapshots[at];
   const timer = useRef<number | null>(null);
+  const [speed, setSpeed] = useState(savedSpeed);
 
   useEffect(() => {
     if (!playing) return;
@@ -26,11 +34,11 @@ export function Timeline({ history, index, onIndex, playing, onPlaying }: Props)
         return;
       }
       onIndex(at + 1);
-    }, STEP_MS);
+    }, STEP_MS / speed);
     return () => {
       if (timer.current) window.clearTimeout(timer.current);
     };
-  }, [at, last, onIndex, onPlaying, playing]);
+  }, [at, last, onIndex, onPlaying, playing, speed]);
 
   const max = Math.max(...history.snapshots.map((s) => s.nodes), 1);
 
@@ -105,6 +113,22 @@ export function Timeline({ history, index, onIndex, playing, onPlaying }: Props)
             Back to today
           </button>
         )}
+        <div className="speed" role="group" aria-label="Replay speed">
+          {SPEEDS.map((value) => (
+            <button
+              key={value}
+              type="button"
+              className={value === speed ? "on" : ""}
+              aria-pressed={value === speed}
+              onClick={() => {
+                setSpeed(value);
+                window.localStorage.setItem(SPEED_KEY, String(value));
+              }}
+            >
+              {value}x
+            </button>
+          ))}
+        </div>
       </div>
     </section>
   );
