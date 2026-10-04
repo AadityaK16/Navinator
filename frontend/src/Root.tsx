@@ -74,7 +74,7 @@ export default function Root() {
     return (
       <main className="blocker">
         <p className="kicker">Call path</p>
-        <h1>RepoNav</h1>
+        <h1>Navinator</h1>
         <p>Loading…</p>
       </main>
     );

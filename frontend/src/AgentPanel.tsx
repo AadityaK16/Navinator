@@ -49,7 +49,7 @@ export function AgentPanel({
     return (
       <aside className="panel collapsed">
         <button type="button" className="ghost collapse-btn" aria-expanded={false} onClick={() => onCollapse(false)}>
-          ◂ RepoNav{asking ? " · tracing…" : ""}
+          ◂ Navinator{asking ? " · tracing…" : ""}
         </button>
       </aside>
     );
@@ -62,7 +62,7 @@ export function AgentPanel({
           Hide ▸
         </button>
       </div>
-      <h1>RepoNav</h1>
+      <h1>Navinator</h1>
       {repoPicker}
       <div className="tabs" role="tablist">
         <button type="button" role="tab" aria-selected={tab === "tour"} className={tab === "tour" ? "tab on" : "tab"} onClick={() => onTab("tour")}>

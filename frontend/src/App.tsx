@@ -748,7 +748,7 @@ export default function App({ repo, repoPicker }: { repo: RepoInfo; repoPicker: 
   if (graphError) {
     return (
       <main className="blocker">
-        <h1>RepoNav</h1>
+        <h1>Navinator</h1>
         <p>The call graph did not load.</p>
         <p className="stream-error">{graphError}</p>
         <button
@@ -768,7 +768,7 @@ export default function App({ repo, repoPicker }: { repo: RepoInfo; repoPicker: 
     return (
       <main className="blocker">
         <p className="kicker">Call path</p>
-        <h1>RepoNav</h1>
+        <h1>Navinator</h1>
         <p>Loading the call graph…</p>
       </main>
     );
