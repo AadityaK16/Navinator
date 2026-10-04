@@ -1,4 +1,4 @@
-# RepoNav
+# Navinator
 
 RepoNav answers a question about one Python backend by walking only real call and dependency edges. Each stop shows the function source and the file and line of the hop that got you there.
 
