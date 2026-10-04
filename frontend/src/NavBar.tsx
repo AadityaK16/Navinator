@@ -5,9 +5,11 @@ type Props = {
   onUp: () => void;
   onHome: () => void;
   canGoUp: boolean;
+  codeView: boolean;
+  onCodeView: () => void;
 };
 
-export function NavBar({ crumbs, onUp, onHome, canGoUp }: Props) {
+export function NavBar({ crumbs, onUp, onHome, canGoUp, codeView, onCodeView }: Props) {
   return (
     <nav className="navbar" aria-label="Where you are">
       <button type="button" className="nav-btn" onClick={onUp} disabled={!canGoUp} title="Up one level (Esc)">
@@ -17,7 +19,21 @@ export function NavBar({ crumbs, onUp, onHome, canGoUp }: Props) {
         <span aria-hidden>⌂</span> Home
       </button>
       <ol className="crumbs">
-        {crumbs.map((crumb, i) => (
+        {crumbs.map((crumb, i) =>
+          i === 0 ? (
+            <li key={crumb.key}>
+              <button
+                type="button"
+                className={codeView ? "crumb code-toggle on" : "crumb code-toggle"}
+                aria-pressed={codeView}
+                onClick={onCodeView}
+                title={codeView ? "Back to the graph (Esc)" : "Read every file's source"}
+              >
+                {crumb.color && <i style={{ background: crumb.color }} />}
+                {crumb.label}
+              </button>
+            </li>
+          ) : (
           <li key={crumb.key}>
             {i > 0 && <span className="sep">›</span>}
             <button
@@ -30,7 +46,8 @@ export function NavBar({ crumbs, onUp, onHome, canGoUp }: Props) {
               {crumb.label}
             </button>
           </li>
-        ))}
+          ),
+        )}
       </ol>
     </nav>
   );

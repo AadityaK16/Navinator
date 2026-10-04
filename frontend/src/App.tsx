@@ -10,6 +10,7 @@ import { Inspector } from "./Inspector";
 import { NavBar, type Crumb } from "./NavBar";
 import { RegroupPanel } from "./RegroupPanel";
 import { Timeline } from "./Timeline";
+import { CodeView } from "./CodeView";
 import { flyTo, frameNodes } from "./tour";
 import { TourBar } from "./TourBar";
 import type { GNode, GraphData, History, LinkType, ModelConfig, NodeDetail, RepoInfo, SearchHit, TourStop } from "./types";
@@ -32,6 +33,21 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
       },
     );
   });
+}
+
+function usePersisted(key: string, initial: boolean): [boolean, (value: boolean) => void] {
+  const [value, setValue] = useState(() => {
+    const saved = window.localStorage.getItem(key);
+    return saved == null ? initial : saved === "1";
+  });
+  const set = useCallback(
+    (next: boolean) => {
+      setValue(next);
+      window.localStorage.setItem(key, next ? "1" : "0");
+    },
+    [key],
+  );
+  return [value, set];
 }
 
 function isTyping(target: EventTarget | null): boolean {
@@ -75,6 +91,9 @@ export default function App({ repo, repoPicker }: { repo: RepoInfo; repoPicker: 
   const [activeGroupingId, setActiveGroupingId] = useState("original");
   const [regroupBusy, setRegroupBusy] = useState(false);
   const [regroupError, setRegroupError] = useState<string | null>(null);
+  const [codeView, setCodeView] = useState(false);
+  const [panelCollapsed, setPanelCollapsed] = usePersisted("reponav.panelCollapsed", false);
+  const [railCollapsed, setRailCollapsed] = usePersisted("reponav.railCollapsed", false);
 
   const grok = modelConfig?.grok;
   const grokVoice = Boolean(grok?.voice);
@@ -432,7 +451,21 @@ export default function App({ repo, repoPicker }: { repo: RepoInfo; repoPicker: 
     frameNodes(fgRef.current, [...group.ids].map((id) => nodesById[id]).filter(Boolean), 1100, 1.35);
   }
 
+  // Move the camera toward (factor < 1) or away from (factor > 1) what it is looking at.
+  function zoom(factor: number) {
+    const fg = fgRef.current;
+    if (!fg) return;
+    const cam = fg.camera().position;
+    const target = (fg.controls() as { target?: Vec } | undefined)?.target ?? { x: 0, y: 0, z: 0 };
+    fg.cameraPosition(
+      { x: target.x + (cam.x - target.x) * factor, y: target.y + (cam.y - target.y) * factor, z: target.z + (cam.z - target.z) * factor },
+      { x: target.x, y: target.y, z: target.z },
+      300,
+    );
+  }
+
   function goHome() {
+    setCodeView(false);
     if (tourCtl.tour) {
       askGen.current += 1;
       tourCtl.exit();
@@ -450,8 +483,12 @@ export default function App({ repo, repoPicker }: { repo: RepoInfo; repoPicker: 
     return node && node.file_path ? fileGroups.get(node.file_path) : undefined;
   }
 
-  // Up walks out one level: function -> file -> folder (or custom group) -> everything.
+  // Up walks out one level: code view -> function -> file -> folder (or custom group) -> everything.
   function goUp() {
+    if (codeView) {
+      setCodeView(false);
+      return;
+    }
     if (tourCtl.tour) {
       const id = nodeFocusId;
       askGen.current += 1;
@@ -480,7 +517,7 @@ export default function App({ repo, repoPicker }: { repo: RepoInfo; repoPicker: 
     frameAll();
   }
 
-  const canGoUp = Boolean(tourCtl.tour || nodeFocusId || focus || blast);
+  const canGoUp = Boolean(codeView || tourCtl.tour || nodeFocusId || focus || blast);
 
   const crumbs = useMemo<Crumb[]>(() => {
     const trail: Crumb[] = [{ key: "all", label: custom ? custom.title : "All code", go: () => goHome() }];
@@ -654,7 +691,7 @@ export default function App({ repo, repoPicker }: { repo: RepoInfo; repoPicker: 
         fgRef={fgRef}
       />
       <div className="topcenter">
-        <NavBar crumbs={crumbs} onUp={goUp} onHome={goHome} canGoUp={canGoUp} />
+        <NavBar crumbs={crumbs} onUp={goUp} onHome={goHome} canGoUp={canGoUp} codeView={codeView} onCodeView={() => setCodeView(!codeView)} />
         {tourCtl.tour && (
           <TourBar
             stops={tourCtl.tour.stops}
@@ -678,138 +715,167 @@ export default function App({ repo, repoPicker }: { repo: RepoInfo; repoPicker: 
           />
         )}
       </div>
-      <AgentPanel
-        repoPicker={repoPicker}
-        demo={repo.kind === "demo"}
-        askHint={
-          repo.kind !== "demo" && modelConfig && !modelConfig.live
-            ? "Asking needs ANTHROPIC_API_KEY or private mode for this repo. Search, regroup, and the graph work without one."
-            : null
-        }
-        question={question}
-        onQuestion={setQuestion}
-        onAsk={onAsk}
-        asking={asking}
-        ready={ready}
-        log={log}
-        error={streamError}
-        search={search}
-        onSearch={setSearch}
-        hits={search.trim() ? hits : []}
-        onJump={(id) => void openNode(id, true)}
-        tab={tab}
-        onTab={setTab}
-        regroup={
-          <RegroupPanel
-            groupings={groupings}
-            activeId={activeGroupingId}
-            busy={regroupBusy}
-            error={regroupError}
-            aiName={aiName}
-            onAsk={(prompt) => void onRegroup(prompt)}
-            onSwitch={(id) => {
-              const next = groupings.find((g) => g.id === id);
-              if (next) applyGrouping(next);
+      {codeView && <CodeView nodes={graph.nodes} selected={detail} colorOf={(path) => fileColors.get(path)} />}
+      {!codeView && (
+        <div className="zoom" role="group" aria-label="Zoom">
+          <button type="button" className="ghost" title="Zoom in" aria-label="Zoom in" onClick={() => zoom(0.7)}>
+            +
+          </button>
+          <button type="button" className="ghost" title="Zoom out" aria-label="Zoom out" onClick={() => zoom(1.4)}>
+            −
+          </button>
+        </div>
+      )}
+      {!codeView && (
+        <>
+          <AgentPanel
+            collapsed={panelCollapsed}
+            onCollapse={setPanelCollapsed}
+            repoPicker={repoPicker}
+            demo={repo.kind === "demo"}
+            askHint={
+              repo.kind !== "demo" && modelConfig && !modelConfig.live
+                ? "Asking needs ANTHROPIC_API_KEY or private mode for this repo. Search, regroup, and the graph work without one."
+                : null
+            }
+            question={question}
+            onQuestion={setQuestion}
+            onAsk={onAsk}
+            asking={asking}
+            ready={ready}
+            log={log}
+            error={streamError}
+            search={search}
+            onSearch={setSearch}
+            hits={search.trim() ? hits : []}
+            onJump={(id) => void openNode(id, true)}
+            tab={tab}
+            onTab={setTab}
+            regroup={
+              <RegroupPanel
+                groupings={groupings}
+                activeId={activeGroupingId}
+                busy={regroupBusy}
+                error={regroupError}
+                aiName={aiName}
+                onAsk={(prompt) => void onRegroup(prompt)}
+                onSwitch={(id) => {
+                  const next = groupings.find((g) => g.id === id);
+                  if (next) applyGrouping(next);
+                }}
+                onFocus={focusCustom}
+              />
+            }
+          />
+          <Inspector
+            node={detail}
+            open={drawerOpen}
+            onToggle={() => setDrawerOpen((open) => !open)}
+            onBlast={(id) => void onBlast(id)}
+            blastActive={blast != null}
+            onClearBlast={() => setBlast(null)}
+            onOpenGroup={(id) => {
+              const group = fileGroupOfId(id);
+              if (group) focusGroup(group);
             }}
-            onFocus={focusCustom}
           />
-        }
-      />
-      <Inspector
-        node={detail}
-        open={drawerOpen}
-        onToggle={() => setDrawerOpen((open) => !open)}
-        onBlast={(id) => void onBlast(id)}
-        blastActive={blast != null}
-        onClearBlast={() => setBlast(null)}
-        onOpenGroup={(id) => {
-          const group = fileGroupOfId(id);
-          if (group) focusGroup(group);
-        }}
-      />
-      <div className="rail">
-        {focus && (
-          <GroupPanel
-            group={focus}
-            members={[...focus.ids].map((id) => nodesById[id]).filter(Boolean)}
-            neighbours={neighbours}
-            color={groupColor(focus)}
-            colorOf={colorOfNode}
-            onMember={(id) => void openNode(id, true)}
-            onGroup={focusGroup}
-            onExit={goUp}
-          />
-        )}
-        <ul className="legend">
-          {blast ? (
-            <>
-              <li><i className="swatch red" /> 1 hop</li>
-              <li><i className="swatch orange" /> 2 hops</li>
-              <li><i className="swatch gold" /> 3 hops or the change</li>
-            </>
-          ) : timeIndex != null ? (
-            <>
-              <li><i className="swatch green" /> Added in this commit</li>
-              <li><i className="swatch ring" /> File (colour = file)</li>
-            </>
-          ) : custom ? (
-            <>
-              <li><i className="swatch ring" /> Colour = your custom group</li>
-              <li><i className="swatch cyan" /> Path</li>
-              <li><i className="swatch gold" /> Current stop</li>
-            </>
-          ) : (
-            <>
-              <li><i className="swatch ring" /> File, each its own colour</li>
-              {graph.nodes.some((n) => n.type === "external") && <li><i className="swatch violet" /> Browser request</li>}
-              <li><i className="swatch cyan" /> Path</li>
-              <li><i className="swatch gold" /> Current stop</li>
-            </>
-          )}
-        </ul>
-        <section className="edges" aria-label="Connection types">
-          <strong>Connections</strong>
-          {EDGE_ORDER.map((kind) => (
+          <div className={railCollapsed ? "rail collapsed" : "rail"}>
             <button
-              key={kind}
               type="button"
-              className={edgeTypes.has(kind) ? "chip on" : "chip"}
-              aria-pressed={edgeTypes.has(kind)}
-              title={EDGE_STYLE[kind].hint}
-              onClick={() => toggleEdge(kind)}
+              className="ghost collapse-btn"
+              aria-expanded={!railCollapsed}
+              onClick={() => setRailCollapsed(!railCollapsed)}
             >
-              <i style={{ background: EDGE_STYLE[kind].color }} />
-              {EDGE_STYLE[kind].label}
+              {railCollapsed ? "Show legend and folders ▸" : "◂ Hide"}
             </button>
-          ))}
-        </section>
-        {modelConfig && (
-          <p className={modelConfig.on_device ? "model private" : "model"}>
-            <i />
-            {modelConfig.on_device
-              ? `Private mode · ${modelConfig.model} on this machine`
-              : modelConfig.live
-                ? `Cloud model · ${modelConfig.model}`
-                : "Demo mode · saved tours"}
-            {grok?.chat ? " · Grok on" : ""}
-          </p>
-        )}
-        {!focus && (
-          <section className="edges" aria-label={custom ? "Groups" : "Folders"}>
-            <strong>{custom ? "Click into a group" : "Click into a folder"}</strong>
-            {(custom ? [...customGroups.values()] : [...folderGroups.values()].sort((a, b) => a.key.localeCompare(b.key))).map((group) => (
-              <button key={group.key} type="button" className="chip on" onClick={() => focusGroup(group)}>
-                <i style={{ background: groupColor(group) }} />
-                {group.title}
-              </button>
-            ))}
-            <span className="tip">Or click any labelled file node to open its group.</span>
-          </section>
-        )}
-        {history && !focus && !custom && (
-          <Timeline history={history} index={timeIndex} onIndex={setTimeIndex} playing={playing} onPlaying={setPlaying} />
-        )}
-      </div>
+            {!railCollapsed && (
+              <>
+                {focus && (
+                  <GroupPanel
+                    group={focus}
+                    members={[...focus.ids].map((id) => nodesById[id]).filter(Boolean)}
+                    neighbours={neighbours}
+                    color={groupColor(focus)}
+                    colorOf={colorOfNode}
+                    onMember={(id) => void openNode(id, true)}
+                    onGroup={focusGroup}
+                    onExit={goUp}
+                  />
+                )}
+                <ul className="legend">
+                  {blast ? (
+                    <>
+                      <li><i className="swatch red" /> 1 hop</li>
+                      <li><i className="swatch orange" /> 2 hops</li>
+                      <li><i className="swatch gold" /> 3 hops or the change</li>
+                    </>
+                  ) : timeIndex != null ? (
+                    <>
+                      <li><i className="swatch green" /> Added in this commit</li>
+                      <li><i className="swatch ring" /> File (colour = file)</li>
+                    </>
+                  ) : custom ? (
+                    <>
+                      <li><i className="swatch ring" /> Colour = your custom group</li>
+                      <li><i className="swatch cyan" /> Path</li>
+                      <li><i className="swatch gold" /> Current stop</li>
+                    </>
+                  ) : (
+                    <>
+                      <li><i className="swatch ring" /> File, each its own colour</li>
+                      {graph.nodes.some((n) => n.type === "external") && <li><i className="swatch violet" /> Browser request</li>}
+                      <li><i className="swatch cyan" /> Path</li>
+                      <li><i className="swatch gold" /> Current stop</li>
+                    </>
+                  )}
+                </ul>
+                <section className="edges" aria-label="Connection types">
+                  <strong>Connections</strong>
+                  {EDGE_ORDER.map((kind) => (
+                    <button
+                      key={kind}
+                      type="button"
+                      className={edgeTypes.has(kind) ? "chip on" : "chip"}
+                      aria-pressed={edgeTypes.has(kind)}
+                      title={EDGE_STYLE[kind].hint}
+                      onClick={() => toggleEdge(kind)}
+                    >
+                      <i style={{ background: EDGE_STYLE[kind].color }} />
+                      {EDGE_STYLE[kind].label}
+                    </button>
+                  ))}
+                </section>
+                {modelConfig && (
+                  <p className={modelConfig.on_device ? "model private" : "model"}>
+                    <i />
+                    {modelConfig.on_device
+                      ? `Private mode · ${modelConfig.model} on this machine`
+                      : modelConfig.live
+                        ? `Cloud model · ${modelConfig.model}`
+                        : "Demo mode · saved tours"}
+                    {grok?.chat ? " · Grok on" : ""}
+                  </p>
+                )}
+                {!focus && (
+                  <section className="edges" aria-label={custom ? "Groups" : "Folders"}>
+                    <strong>{custom ? "Click into a group" : "Click into a folder"}</strong>
+                    {(custom ? [...customGroups.values()] : [...folderGroups.values()].sort((a, b) => a.key.localeCompare(b.key))).map((group) => (
+                      <button key={group.key} type="button" className="chip on" onClick={() => focusGroup(group)}>
+                        <i style={{ background: groupColor(group) }} />
+                        {group.title}
+                      </button>
+                    ))}
+                    <span className="tip">Or click any labelled file node to open its group.</span>
+                  </section>
+                )}
+                {history && !focus && !custom && (
+                  <Timeline history={history} index={timeIndex} onIndex={setTimeIndex} playing={playing} onPlaying={setPlaying} />
+                )}
+              </>
+            )}
+          </div>
+        </>
+      )}
     </main>
   );
 }

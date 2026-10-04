@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import { PRESET_QUESTIONS, type SearchHit } from "./types";
 
 type Props = {
+  collapsed: boolean;
+  onCollapse: (collapsed: boolean) => void;
   repoPicker: ReactNode;
   demo: boolean;
   askHint: string | null;
@@ -22,6 +24,8 @@ type Props = {
 };
 
 export function AgentPanel({
+  collapsed,
+  onCollapse,
   repoPicker,
   demo,
   askHint,
@@ -41,9 +45,23 @@ export function AgentPanel({
   regroup,
 }: Props) {
   const askDisabled = !ready || asking || !question.trim();
+  if (collapsed) {
+    return (
+      <aside className="panel collapsed">
+        <button type="button" className="ghost collapse-btn" aria-expanded={false} onClick={() => onCollapse(false)}>
+          ◂ RepoNav{asking ? " · tracing…" : ""}
+        </button>
+      </aside>
+    );
+  }
   return (
     <aside className="panel">
-      <p className="kicker">Call path</p>
+      <div className="panel-head">
+        <p className="kicker">Call path</p>
+        <button type="button" className="ghost collapse-btn" aria-expanded onClick={() => onCollapse(true)} title="Collapse panel">
+          Hide ▸
+        </button>
+      </div>
       <h1>RepoNav</h1>
       {repoPicker}
       <div className="tabs" role="tablist">
