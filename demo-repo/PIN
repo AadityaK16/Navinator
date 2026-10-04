@@ -1,0 +1,6 @@
+1762adac607a1b29cfc4da129557780beea71616
+
+Local edit, not an upstream change: backend/app/api/deps.py parenthesizes
+`except (InvalidTokenError, ValidationError)` so the file parses on Python 3.12.
+The unpinned template uses PEP 758 syntax that this interpreter rejects, which
+would drop the whole module from the call graph. Line numbers are unchanged.

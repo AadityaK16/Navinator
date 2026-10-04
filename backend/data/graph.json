@@ -1,0 +1,2646 @@
+{
+  "nodes": [
+    {
+      "id": "app",
+      "label": "__init__.py",
+      "type": "file",
+      "file_path": "app/__init__.py",
+      "line_start": 1,
+      "line_end": 1,
+      "module": "app",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.api",
+      "label": "__init__.py",
+      "type": "file",
+      "file_path": "app/api/__init__.py",
+      "line_start": 1,
+      "line_end": 1,
+      "module": "app.api",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.api.deps",
+      "label": "deps.py",
+      "type": "file",
+      "file_path": "app/api/deps.py",
+      "line_start": 1,
+      "line_end": 57,
+      "module": "app.api.deps",
+      "cls": null,
+      "cluster": "app.api",
+      "doc": ""
+    },
+    {
+      "id": "app.api.deps.get_db",
+      "label": "get_db",
+      "type": "function",
+      "file_path": "app/api/deps.py",
+      "line_start": 21,
+      "line_end": 23,
+      "module": "app.api.deps",
+      "cls": null,
+      "cluster": "app.api",
+      "doc": ""
+    },
+    {
+      "id": "app.api.deps.get_current_user",
+      "label": "get_current_user",
+      "type": "function",
+      "file_path": "app/api/deps.py",
+      "line_start": 30,
+      "line_end": 46,
+      "module": "app.api.deps",
+      "cls": null,
+      "cluster": "app.api",
+      "doc": ""
+    },
+    {
+      "id": "app.api.deps.get_current_active_superuser",
+      "label": "get_current_active_superuser",
+      "type": "function",
+      "file_path": "app/api/deps.py",
+      "line_start": 52,
+      "line_end": 57,
+      "module": "app.api.deps",
+      "cls": null,
+      "cluster": "app.api",
+      "doc": ""
+    },
+    {
+      "id": "app.api.main",
+      "label": "main.py",
+      "type": "file",
+      "file_path": "app/api/main.py",
+      "line_start": 1,
+      "line_end": 14,
+      "module": "app.api.main",
+      "cls": null,
+      "cluster": "app.api",
+      "doc": ""
+    },
+    {
+      "id": "app.api.routes",
+      "label": "__init__.py",
+      "type": "file",
+      "file_path": "app/api/routes/__init__.py",
+      "line_start": 1,
+      "line_end": 1,
+      "module": "app.api.routes",
+      "cls": null,
+      "cluster": "app.api",
+      "doc": ""
+    },
+    {
+      "id": "app.api.routes.items",
+      "label": "items.py",
+      "type": "file",
+      "file_path": "app/api/routes/items.py",
+      "line_start": 1,
+      "line_end": 113,
+      "module": "app.api.routes.items",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": ""
+    },
+    {
+      "id": "app.api.routes.items.read_items",
+      "label": "read_items",
+      "type": "function",
+      "file_path": "app/api/routes/items.py",
+      "line_start": 14,
+      "line_end": 45,
+      "module": "app.api.routes.items",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Retrieve items."
+    },
+    {
+      "id": "app.api.routes.items.read_item",
+      "label": "read_item",
+      "type": "function",
+      "file_path": "app/api/routes/items.py",
+      "line_start": 49,
+      "line_end": 58,
+      "module": "app.api.routes.items",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Get item by ID."
+    },
+    {
+      "id": "app.api.routes.items.create_item",
+      "label": "create_item",
+      "type": "function",
+      "file_path": "app/api/routes/items.py",
+      "line_start": 62,
+      "line_end": 72,
+      "module": "app.api.routes.items",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Create new item."
+    },
+    {
+      "id": "app.api.routes.items.update_item",
+      "label": "update_item",
+      "type": "function",
+      "file_path": "app/api/routes/items.py",
+      "line_start": 76,
+      "line_end": 96,
+      "module": "app.api.routes.items",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Update an item."
+    },
+    {
+      "id": "app.api.routes.items.delete_item",
+      "label": "delete_item",
+      "type": "function",
+      "file_path": "app/api/routes/items.py",
+      "line_start": 100,
+      "line_end": 113,
+      "module": "app.api.routes.items",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Delete an item."
+    },
+    {
+      "id": "app.api.routes.login",
+      "label": "login.py",
+      "type": "file",
+      "file_path": "app/api/routes/login.py",
+      "line_start": 1,
+      "line_end": 123,
+      "module": "app.api.routes.login",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": ""
+    },
+    {
+      "id": "app.api.routes.login.login_access_token",
+      "label": "login_access_token",
+      "type": "function",
+      "file_path": "app/api/routes/login.py",
+      "line_start": 24,
+      "line_end": 42,
+      "module": "app.api.routes.login",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "OAuth2 compatible token login, get an access token for future requests"
+    },
+    {
+      "id": "app.api.routes.login.test_token",
+      "label": "test_token",
+      "type": "function",
+      "file_path": "app/api/routes/login.py",
+      "line_start": 46,
+      "line_end": 50,
+      "module": "app.api.routes.login",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Test access token"
+    },
+    {
+      "id": "app.api.routes.login.recover_password",
+      "label": "recover_password",
+      "type": "function",
+      "file_path": "app/api/routes/login.py",
+      "line_start": 54,
+      "line_end": 74,
+      "module": "app.api.routes.login",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Password Recovery"
+    },
+    {
+      "id": "app.api.routes.login.reset_password",
+      "label": "reset_password",
+      "type": "function",
+      "file_path": "app/api/routes/login.py",
+      "line_start": 78,
+      "line_end": 97,
+      "module": "app.api.routes.login",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Reset password"
+    },
+    {
+      "id": "app.api.routes.login.recover_password_html_content",
+      "label": "recover_password_html_content",
+      "type": "function",
+      "file_path": "app/api/routes/login.py",
+      "line_start": 105,
+      "line_end": 123,
+      "module": "app.api.routes.login",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "HTML Content for Password Recovery"
+    },
+    {
+      "id": "app.api.routes.private",
+      "label": "private.py",
+      "type": "file",
+      "file_path": "app/api/routes/private.py",
+      "line_start": 1,
+      "line_end": 38,
+      "module": "app.api.routes.private",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": ""
+    },
+    {
+      "id": "app.api.routes.private.PrivateUserCreate",
+      "label": "PrivateUserCreate",
+      "type": "class",
+      "file_path": "app/api/routes/private.py",
+      "line_start": 16,
+      "line_end": 20,
+      "module": "app.api.routes.private",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": ""
+    },
+    {
+      "id": "app.api.routes.private.create_user",
+      "label": "create_user",
+      "type": "function",
+      "file_path": "app/api/routes/private.py",
+      "line_start": 24,
+      "line_end": 38,
+      "module": "app.api.routes.private",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Create a new user."
+    },
+    {
+      "id": "app.api.routes.users",
+      "label": "users.py",
+      "type": "file",
+      "file_path": "app/api/routes/users.py",
+      "line_start": 1,
+      "line_end": 232,
+      "module": "app.api.routes.users",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": ""
+    },
+    {
+      "id": "app.api.routes.users.read_users",
+      "label": "read_users",
+      "type": "function",
+      "file_path": "app/api/routes/users.py",
+      "line_start": 37,
+      "line_end": 51,
+      "module": "app.api.routes.users",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Retrieve users."
+    },
+    {
+      "id": "app.api.routes.users.create_user",
+      "label": "create_user",
+      "type": "function",
+      "file_path": "app/api/routes/users.py",
+      "line_start": 57,
+      "line_end": 78,
+      "module": "app.api.routes.users",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Create new user."
+    },
+    {
+      "id": "app.api.routes.users.update_user_me",
+      "label": "update_user_me",
+      "type": "function",
+      "file_path": "app/api/routes/users.py",
+      "line_start": 82,
+      "line_end": 100,
+      "module": "app.api.routes.users",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Update own user."
+    },
+    {
+      "id": "app.api.routes.users.update_password_me",
+      "label": "update_password_me",
+      "type": "function",
+      "file_path": "app/api/routes/users.py",
+      "line_start": 104,
+      "line_end": 121,
+      "module": "app.api.routes.users",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Update own password."
+    },
+    {
+      "id": "app.api.routes.users.read_user_me",
+      "label": "read_user_me",
+      "type": "function",
+      "file_path": "app/api/routes/users.py",
+      "line_start": 125,
+      "line_end": 129,
+      "module": "app.api.routes.users",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Get current user."
+    },
+    {
+      "id": "app.api.routes.users.delete_user_me",
+      "label": "delete_user_me",
+      "type": "function",
+      "file_path": "app/api/routes/users.py",
+      "line_start": 133,
+      "line_end": 143,
+      "module": "app.api.routes.users",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Delete own user."
+    },
+    {
+      "id": "app.api.routes.users.register_user",
+      "label": "register_user",
+      "type": "function",
+      "file_path": "app/api/routes/users.py",
+      "line_start": 147,
+      "line_end": 159,
+      "module": "app.api.routes.users",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Create new user without the need to be logged in."
+    },
+    {
+      "id": "app.api.routes.users.read_user_by_id",
+      "label": "read_user_by_id",
+      "type": "function",
+      "file_path": "app/api/routes/users.py",
+      "line_start": 163,
+      "line_end": 179,
+      "module": "app.api.routes.users",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Get a specific user by id."
+    },
+    {
+      "id": "app.api.routes.users.update_user",
+      "label": "update_user",
+      "type": "function",
+      "file_path": "app/api/routes/users.py",
+      "line_start": 187,
+      "line_end": 211,
+      "module": "app.api.routes.users",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Update a user."
+    },
+    {
+      "id": "app.api.routes.users.delete_user",
+      "label": "delete_user",
+      "type": "function",
+      "file_path": "app/api/routes/users.py",
+      "line_start": 215,
+      "line_end": 232,
+      "module": "app.api.routes.users",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Delete a user."
+    },
+    {
+      "id": "app.api.routes.utils",
+      "label": "utils.py",
+      "type": "file",
+      "file_path": "app/api/routes/utils.py",
+      "line_start": 1,
+      "line_end": 31,
+      "module": "app.api.routes.utils",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": ""
+    },
+    {
+      "id": "app.api.routes.utils.test_email",
+      "label": "test_email",
+      "type": "function",
+      "file_path": "app/api/routes/utils.py",
+      "line_start": 16,
+      "line_end": 26,
+      "module": "app.api.routes.utils",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": "Test emails."
+    },
+    {
+      "id": "app.api.routes.utils.health_check",
+      "label": "health_check",
+      "type": "function",
+      "file_path": "app/api/routes/utils.py",
+      "line_start": 30,
+      "line_end": 31,
+      "module": "app.api.routes.utils",
+      "cls": null,
+      "cluster": "app.api.routes",
+      "doc": ""
+    },
+    {
+      "id": "app.core",
+      "label": "__init__.py",
+      "type": "file",
+      "file_path": "app/core/__init__.py",
+      "line_start": 1,
+      "line_end": 1,
+      "module": "app.core",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.core.config",
+      "label": "config.py",
+      "type": "file",
+      "file_path": "app/core/config.py",
+      "line_start": 1,
+      "line_end": 91,
+      "module": "app.core.config",
+      "cls": null,
+      "cluster": "app.core",
+      "doc": ""
+    },
+    {
+      "id": "app.core.config.Settings",
+      "label": "Settings",
+      "type": "class",
+      "file_path": "app/core/config.py",
+      "line_start": 15,
+      "line_end": 88,
+      "module": "app.core.config",
+      "cls": null,
+      "cluster": "app.core",
+      "doc": ""
+    },
+    {
+      "id": "app.core.config.Settings._use_psycopg_driver",
+      "label": "_use_psycopg_driver",
+      "type": "method",
+      "file_path": "app/core/config.py",
+      "line_start": 35,
+      "line_end": 40,
+      "module": "app.core.config",
+      "cls": "app.core.config.Settings",
+      "cluster": "app.core",
+      "doc": ""
+    },
+    {
+      "id": "app.core.config.Settings._set_default_emails_from",
+      "label": "_set_default_emails_from",
+      "type": "method",
+      "file_path": "app/core/config.py",
+      "line_start": 52,
+      "line_end": 55,
+      "module": "app.core.config",
+      "cls": "app.core.config.Settings",
+      "cluster": "app.core",
+      "doc": ""
+    },
+    {
+      "id": "app.core.config.Settings.emails_enabled",
+      "label": "emails_enabled",
+      "type": "method",
+      "file_path": "app/core/config.py",
+      "line_start": 61,
+      "line_end": 62,
+      "module": "app.core.config",
+      "cls": "app.core.config.Settings",
+      "cluster": "app.core",
+      "doc": ""
+    },
+    {
+      "id": "app.core.config.Settings._check_default_secret",
+      "label": "_check_default_secret",
+      "type": "method",
+      "file_path": "app/core/config.py",
+      "line_start": 68,
+      "line_end": 77,
+      "module": "app.core.config",
+      "cls": "app.core.config.Settings",
+      "cluster": "app.core",
+      "doc": ""
+    },
+    {
+      "id": "app.core.config.Settings._enforce_non_default_secrets",
+      "label": "_enforce_non_default_secrets",
+      "type": "method",
+      "file_path": "app/core/config.py",
+      "line_start": 80,
+      "line_end": 88,
+      "module": "app.core.config",
+      "cls": "app.core.config.Settings",
+      "cluster": "app.core",
+      "doc": ""
+    },
+    {
+      "id": "app.core.db",
+      "label": "db.py",
+      "type": "file",
+      "file_path": "app/core/db.py",
+      "line_start": 1,
+      "line_end": 33,
+      "module": "app.core.db",
+      "cls": null,
+      "cluster": "app.core",
+      "doc": ""
+    },
+    {
+      "id": "app.core.db.init_db",
+      "label": "init_db",
+      "type": "function",
+      "file_path": "app/core/db.py",
+      "line_start": 15,
+      "line_end": 33,
+      "module": "app.core.db",
+      "cls": null,
+      "cluster": "app.core",
+      "doc": ""
+    },
+    {
+      "id": "app.core.security",
+      "label": "security.py",
+      "type": "file",
+      "file_path": "app/core/security.py",
+      "line_start": 1,
+      "line_end": 36,
+      "module": "app.core.security",
+      "cls": null,
+      "cluster": "app.core",
+      "doc": ""
+    },
+    {
+      "id": "app.core.security.create_access_token",
+      "label": "create_access_token",
+      "type": "function",
+      "file_path": "app/core/security.py",
+      "line_start": 22,
+      "line_end": 26,
+      "module": "app.core.security",
+      "cls": null,
+      "cluster": "app.core",
+      "doc": ""
+    },
+    {
+      "id": "app.core.security.verify_password",
+      "label": "verify_password",
+      "type": "function",
+      "file_path": "app/core/security.py",
+      "line_start": 29,
+      "line_end": 32,
+      "module": "app.core.security",
+      "cls": null,
+      "cluster": "app.core",
+      "doc": ""
+    },
+    {
+      "id": "app.core.security.get_password_hash",
+      "label": "get_password_hash",
+      "type": "function",
+      "file_path": "app/core/security.py",
+      "line_start": 35,
+      "line_end": 36,
+      "module": "app.core.security",
+      "cls": null,
+      "cluster": "app.core",
+      "doc": ""
+    },
+    {
+      "id": "app.crud",
+      "label": "crud.py",
+      "type": "file",
+      "file_path": "app/crud.py",
+      "line_start": 1,
+      "line_end": 68,
+      "module": "app.crud",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.crud.create_user",
+      "label": "create_user",
+      "type": "function",
+      "file_path": "app/crud.py",
+      "line_start": 10,
+      "line_end": 17,
+      "module": "app.crud",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.crud.update_user",
+      "label": "update_user",
+      "type": "function",
+      "file_path": "app/crud.py",
+      "line_start": 20,
+      "line_end": 31,
+      "module": "app.crud",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.crud.get_user_by_email",
+      "label": "get_user_by_email",
+      "type": "function",
+      "file_path": "app/crud.py",
+      "line_start": 34,
+      "line_end": 37,
+      "module": "app.crud",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.crud.authenticate",
+      "label": "authenticate",
+      "type": "function",
+      "file_path": "app/crud.py",
+      "line_start": 45,
+      "line_end": 60,
+      "module": "app.crud",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.crud.create_item",
+      "label": "create_item",
+      "type": "function",
+      "file_path": "app/crud.py",
+      "line_start": 63,
+      "line_end": 68,
+      "module": "app.crud",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.initial_data",
+      "label": "initial_data.py",
+      "type": "file",
+      "file_path": "app/initial_data.py",
+      "line_start": 1,
+      "line_end": 23,
+      "module": "app.initial_data",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.initial_data.init",
+      "label": "init",
+      "type": "function",
+      "file_path": "app/initial_data.py",
+      "line_start": 11,
+      "line_end": 13,
+      "module": "app.initial_data",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.initial_data.main",
+      "label": "main",
+      "type": "function",
+      "file_path": "app/initial_data.py",
+      "line_start": 16,
+      "line_end": 19,
+      "module": "app.initial_data",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.main",
+      "label": "main.py",
+      "type": "file",
+      "file_path": "app/main.py",
+      "line_start": 1,
+      "line_end": 36,
+      "module": "app.main",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.main.custom_generate_unique_id",
+      "label": "custom_generate_unique_id",
+      "type": "function",
+      "file_path": "app/main.py",
+      "line_start": 14,
+      "line_end": 15,
+      "module": "app.main",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models",
+      "label": "models.py",
+      "type": "file",
+      "file_path": "app/models.py",
+      "line_start": 1,
+      "line_end": 133,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.get_datetime_utc",
+      "label": "get_datetime_utc",
+      "type": "function",
+      "file_path": "app/models.py",
+      "line_start": 9,
+      "line_end": 10,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.UserBase",
+      "label": "UserBase",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 14,
+      "line_end": 18,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.UserCreate",
+      "label": "UserCreate",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 22,
+      "line_end": 23,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.UserRegister",
+      "label": "UserRegister",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 26,
+      "line_end": 29,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.UserUpdate",
+      "label": "UserUpdate",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 33,
+      "line_end": 38,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.UserUpdateMe",
+      "label": "UserUpdateMe",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 41,
+      "line_end": 43,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.UpdatePassword",
+      "label": "UpdatePassword",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 46,
+      "line_end": 48,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.User",
+      "label": "User",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 52,
+      "line_end": 59,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.UserPublic",
+      "label": "UserPublic",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 63,
+      "line_end": 65,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.UsersPublic",
+      "label": "UsersPublic",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 68,
+      "line_end": 70,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.ItemBase",
+      "label": "ItemBase",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 74,
+      "line_end": 76,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.ItemCreate",
+      "label": "ItemCreate",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 80,
+      "line_end": 81,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.ItemUpdate",
+      "label": "ItemUpdate",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 85,
+      "line_end": 87,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.Item",
+      "label": "Item",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 91,
+      "line_end": 100,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.ItemPublic",
+      "label": "ItemPublic",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 104,
+      "line_end": 107,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.ItemsPublic",
+      "label": "ItemsPublic",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 110,
+      "line_end": 112,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.Message",
+      "label": "Message",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 116,
+      "line_end": 117,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.Token",
+      "label": "Token",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 121,
+      "line_end": 123,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.TokenPayload",
+      "label": "TokenPayload",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 127,
+      "line_end": 128,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.models.NewPassword",
+      "label": "NewPassword",
+      "type": "class",
+      "file_path": "app/models.py",
+      "line_start": 131,
+      "line_end": 133,
+      "module": "app.models",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.utils",
+      "label": "utils.py",
+      "type": "file",
+      "file_path": "app/utils.py",
+      "line_start": 1,
+      "line_end": 125,
+      "module": "app.utils",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.utils.EmailData",
+      "label": "EmailData",
+      "type": "class",
+      "file_path": "app/utils.py",
+      "line_start": 20,
+      "line_end": 22,
+      "module": "app.utils",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.utils.render_email_template",
+      "label": "render_email_template",
+      "type": "function",
+      "file_path": "app/utils.py",
+      "line_start": 25,
+      "line_end": 31,
+      "module": "app.utils",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.utils.send_email",
+      "label": "send_email",
+      "type": "function",
+      "file_path": "app/utils.py",
+      "line_start": 34,
+      "line_end": 57,
+      "module": "app.utils",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.utils.generate_test_email",
+      "label": "generate_test_email",
+      "type": "function",
+      "file_path": "app/utils.py",
+      "line_start": 60,
+      "line_end": 67,
+      "module": "app.utils",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.utils.generate_reset_password_email",
+      "label": "generate_reset_password_email",
+      "type": "function",
+      "file_path": "app/utils.py",
+      "line_start": 70,
+      "line_end": 84,
+      "module": "app.utils",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.utils.generate_new_account_email",
+      "label": "generate_new_account_email",
+      "type": "function",
+      "file_path": "app/utils.py",
+      "line_start": 87,
+      "line_end": 102,
+      "module": "app.utils",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.utils.generate_password_reset_token",
+      "label": "generate_password_reset_token",
+      "type": "function",
+      "file_path": "app/utils.py",
+      "line_start": 105,
+      "line_end": 115,
+      "module": "app.utils",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "app.utils.verify_password_reset_token",
+      "label": "verify_password_reset_token",
+      "type": "function",
+      "file_path": "app/utils.py",
+      "line_start": 118,
+      "line_end": 125,
+      "module": "app.utils",
+      "cls": null,
+      "cluster": "app",
+      "doc": ""
+    },
+    {
+      "id": "external.browser.post_login_access_token",
+      "label": "POST /login/access-token",
+      "type": "external",
+      "file_path": "",
+      "line_start": 0,
+      "line_end": 0,
+      "module": "external",
+      "cls": null,
+      "cluster": "external",
+      "doc": ""
+    },
+    {
+      "id": "external.browser.authenticated_request",
+      "label": "Authenticated request",
+      "type": "external",
+      "file_path": "",
+      "line_start": 0,
+      "line_end": 0,
+      "module": "external",
+      "cls": null,
+      "cluster": "external",
+      "doc": ""
+    }
+  ],
+  "links": [
+    {
+      "source": "app.api.deps",
+      "target": "app.api.deps.get_db",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.deps",
+      "target": "app.api.deps.get_current_user",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.deps",
+      "target": "app.api.deps.get_current_active_superuser",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items",
+      "target": "app.api.routes.items.read_items",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items",
+      "target": "app.api.routes.items.read_item",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items",
+      "target": "app.api.routes.items.create_item",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items",
+      "target": "app.api.routes.items.update_item",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items",
+      "target": "app.api.routes.items.delete_item",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login",
+      "target": "app.api.routes.login.login_access_token",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login",
+      "target": "app.api.routes.login.test_token",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login",
+      "target": "app.api.routes.login.recover_password",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login",
+      "target": "app.api.routes.login.reset_password",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login",
+      "target": "app.api.routes.login.recover_password_html_content",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.private",
+      "target": "app.api.routes.private.PrivateUserCreate",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.private",
+      "target": "app.api.routes.private.create_user",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users",
+      "target": "app.api.routes.users.read_users",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users",
+      "target": "app.api.routes.users.create_user",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users",
+      "target": "app.api.routes.users.update_user_me",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users",
+      "target": "app.api.routes.users.update_password_me",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users",
+      "target": "app.api.routes.users.read_user_me",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users",
+      "target": "app.api.routes.users.delete_user_me",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users",
+      "target": "app.api.routes.users.register_user",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users",
+      "target": "app.api.routes.users.read_user_by_id",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users",
+      "target": "app.api.routes.users.update_user",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users",
+      "target": "app.api.routes.users.delete_user",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.utils",
+      "target": "app.api.routes.utils.test_email",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.utils",
+      "target": "app.api.routes.utils.health_check",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.core.config",
+      "target": "app.core.config.Settings",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.core.config.Settings",
+      "target": "app.core.config.Settings._use_psycopg_driver",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.core.config.Settings",
+      "target": "app.core.config.Settings._set_default_emails_from",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.core.config.Settings",
+      "target": "app.core.config.Settings.emails_enabled",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.core.config.Settings",
+      "target": "app.core.config.Settings._check_default_secret",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.core.config.Settings",
+      "target": "app.core.config.Settings._enforce_non_default_secrets",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.core.db",
+      "target": "app.core.db.init_db",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.core.security",
+      "target": "app.core.security.create_access_token",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.core.security",
+      "target": "app.core.security.verify_password",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.core.security",
+      "target": "app.core.security.get_password_hash",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.crud",
+      "target": "app.crud.create_user",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.crud",
+      "target": "app.crud.update_user",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.crud",
+      "target": "app.crud.get_user_by_email",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.crud",
+      "target": "app.crud.authenticate",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.crud",
+      "target": "app.crud.create_item",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.initial_data",
+      "target": "app.initial_data.init",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.initial_data",
+      "target": "app.initial_data.main",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.main",
+      "target": "app.main.custom_generate_unique_id",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.get_datetime_utc",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.UserBase",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.UserCreate",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.UserRegister",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.UserUpdate",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.UserUpdateMe",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.UpdatePassword",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.User",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.UserPublic",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.UsersPublic",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.ItemBase",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.ItemCreate",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.ItemUpdate",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.Item",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.ItemPublic",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.ItemsPublic",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.Message",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.Token",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.TokenPayload",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.models",
+      "target": "app.models.NewPassword",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.utils",
+      "target": "app.utils.EmailData",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.utils",
+      "target": "app.utils.render_email_template",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.utils",
+      "target": "app.utils.send_email",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.utils",
+      "target": "app.utils.generate_test_email",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.utils",
+      "target": "app.utils.generate_reset_password_email",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.utils",
+      "target": "app.utils.generate_new_account_email",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.utils",
+      "target": "app.utils.generate_password_reset_token",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.utils",
+      "target": "app.utils.verify_password_reset_token",
+      "type": "contains",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.deps.get_current_user",
+      "target": "app.models.TokenPayload",
+      "type": "calls",
+      "line": 35,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.deps.get_current_user",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 30,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.deps.get_current_active_superuser",
+      "target": "app.api.deps.get_current_user",
+      "type": "depends",
+      "line": 52,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items.read_items",
+      "target": "app.models.ItemsPublic",
+      "type": "calls",
+      "line": 45,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items.read_items",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 15,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items.read_items",
+      "target": "app.api.deps.get_current_user",
+      "type": "depends",
+      "line": 15,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items.read_item",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 49,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items.read_item",
+      "target": "app.api.deps.get_current_user",
+      "type": "depends",
+      "line": 49,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items.create_item",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 63,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items.create_item",
+      "target": "app.api.deps.get_current_user",
+      "type": "depends",
+      "line": 63,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items.update_item",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 78,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items.update_item",
+      "target": "app.api.deps.get_current_user",
+      "type": "depends",
+      "line": 79,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items.delete_item",
+      "target": "app.models.Message",
+      "type": "calls",
+      "line": 113,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items.delete_item",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 101,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items.delete_item",
+      "target": "app.api.deps.get_current_user",
+      "type": "depends",
+      "line": 101,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.login_access_token",
+      "target": "app.crud.authenticate",
+      "type": "calls",
+      "line": 30,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.login_access_token",
+      "target": "app.models.Token",
+      "type": "calls",
+      "line": 38,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.login_access_token",
+      "target": "app.core.security.create_access_token",
+      "type": "calls",
+      "line": 39,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.login_access_token",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 25,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.test_token",
+      "target": "app.api.deps.get_current_user",
+      "type": "depends",
+      "line": 46,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.recover_password",
+      "target": "app.crud.get_user_by_email",
+      "type": "calls",
+      "line": 58,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.recover_password",
+      "target": "app.models.Message",
+      "type": "calls",
+      "line": 72,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.recover_password",
+      "target": "app.utils.generate_password_reset_token",
+      "type": "calls",
+      "line": 63,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.recover_password",
+      "target": "app.utils.generate_reset_password_email",
+      "type": "calls",
+      "line": 64,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.recover_password",
+      "target": "app.utils.send_email",
+      "type": "calls",
+      "line": 67,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.recover_password",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 54,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.reset_password",
+      "target": "app.utils.verify_password_reset_token",
+      "type": "calls",
+      "line": 82,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.reset_password",
+      "target": "app.crud.get_user_by_email",
+      "type": "calls",
+      "line": 85,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.reset_password",
+      "target": "app.models.UserUpdate",
+      "type": "calls",
+      "line": 91,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.reset_password",
+      "target": "app.crud.update_user",
+      "type": "calls",
+      "line": 92,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.reset_password",
+      "target": "app.models.Message",
+      "type": "calls",
+      "line": 97,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.reset_password",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 78,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.recover_password_html_content",
+      "target": "app.crud.get_user_by_email",
+      "type": "calls",
+      "line": 109,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.recover_password_html_content",
+      "target": "app.utils.generate_password_reset_token",
+      "type": "calls",
+      "line": 116,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.recover_password_html_content",
+      "target": "app.utils.generate_reset_password_email",
+      "type": "calls",
+      "line": 117,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.recover_password_html_content",
+      "target": "app.api.deps.get_current_active_superuser",
+      "type": "depends",
+      "line": 102,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login.recover_password_html_content",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 105,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.private.create_user",
+      "target": "app.models.User",
+      "type": "calls",
+      "line": 29,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.private.create_user",
+      "target": "app.core.security.get_password_hash",
+      "type": "calls",
+      "line": 32,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.private.create_user",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 24,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.read_users",
+      "target": "app.models.UsersPublic",
+      "type": "calls",
+      "line": 51,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.read_users",
+      "target": "app.api.deps.get_current_active_superuser",
+      "type": "depends",
+      "line": 34,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.read_users",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 37,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.create_user",
+      "target": "app.crud.get_user_by_email",
+      "type": "calls",
+      "line": 61,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.create_user",
+      "target": "app.crud.create_user",
+      "type": "calls",
+      "line": 68,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.create_user",
+      "target": "app.utils.generate_new_account_email",
+      "type": "calls",
+      "line": 70,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.create_user",
+      "target": "app.utils.send_email",
+      "type": "calls",
+      "line": 73,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.create_user",
+      "target": "app.api.deps.get_current_active_superuser",
+      "type": "depends",
+      "line": 55,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.create_user",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 57,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.update_user_me",
+      "target": "app.crud.get_user_by_email",
+      "type": "calls",
+      "line": 90,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.update_user_me",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 83,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.update_user_me",
+      "target": "app.api.deps.get_current_user",
+      "type": "depends",
+      "line": 83,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.update_password_me",
+      "target": "app.core.security.verify_password",
+      "type": "calls",
+      "line": 110,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.update_password_me",
+      "target": "app.core.security.get_password_hash",
+      "type": "calls",
+      "line": 117,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.update_password_me",
+      "target": "app.models.Message",
+      "type": "calls",
+      "line": 121,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.update_password_me",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 105,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.update_password_me",
+      "target": "app.api.deps.get_current_user",
+      "type": "depends",
+      "line": 105,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.read_user_me",
+      "target": "app.api.deps.get_current_user",
+      "type": "depends",
+      "line": 125,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.delete_user_me",
+      "target": "app.models.Message",
+      "type": "calls",
+      "line": 143,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.delete_user_me",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 133,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.delete_user_me",
+      "target": "app.api.deps.get_current_user",
+      "type": "depends",
+      "line": 133,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.register_user",
+      "target": "app.crud.get_user_by_email",
+      "type": "calls",
+      "line": 151,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.register_user",
+      "target": "app.crud.create_user",
+      "type": "calls",
+      "line": 158,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.register_user",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 147,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.read_user_by_id",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 164,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.read_user_by_id",
+      "target": "app.api.deps.get_current_user",
+      "type": "depends",
+      "line": 164,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.update_user",
+      "target": "app.crud.update_user",
+      "type": "calls",
+      "line": 210,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.update_user",
+      "target": "app.crud.get_user_by_email",
+      "type": "calls",
+      "line": 204,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.update_user",
+      "target": "app.api.deps.get_current_active_superuser",
+      "type": "depends",
+      "line": 184,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.update_user",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 189,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.delete_user",
+      "target": "app.models.Message",
+      "type": "calls",
+      "line": 232,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.delete_user",
+      "target": "app.api.deps.get_current_active_superuser",
+      "type": "depends",
+      "line": 214,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.delete_user",
+      "target": "app.api.deps.get_db",
+      "type": "depends",
+      "line": 216,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users.delete_user",
+      "target": "app.api.deps.get_current_user",
+      "type": "depends",
+      "line": 216,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.utils.test_email",
+      "target": "app.utils.generate_test_email",
+      "type": "calls",
+      "line": 20,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.utils.test_email",
+      "target": "app.utils.send_email",
+      "type": "calls",
+      "line": 21,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.utils.test_email",
+      "target": "app.models.Message",
+      "type": "calls",
+      "line": 26,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.utils.test_email",
+      "target": "app.api.deps.get_current_active_superuser",
+      "type": "depends",
+      "line": 13,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.core.config.Settings._enforce_non_default_secrets",
+      "target": "app.core.config.Settings._check_default_secret",
+      "type": "calls",
+      "line": 81,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.core.db.init_db",
+      "target": "app.models.UserCreate",
+      "type": "calls",
+      "line": 28,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.core.db.init_db",
+      "target": "app.crud.create_user",
+      "type": "calls",
+      "line": 33,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.crud.create_user",
+      "target": "app.core.security.get_password_hash",
+      "type": "calls",
+      "line": 12,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.crud.update_user",
+      "target": "app.core.security.get_password_hash",
+      "type": "calls",
+      "line": 25,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.crud.authenticate",
+      "target": "app.crud.get_user_by_email",
+      "type": "calls",
+      "line": 46,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.crud.authenticate",
+      "target": "app.core.security.verify_password",
+      "type": "calls",
+      "line": 50,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.initial_data.init",
+      "target": "app.core.db.init_db",
+      "type": "calls",
+      "line": 13,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.initial_data.main",
+      "target": "app.initial_data.init",
+      "type": "calls",
+      "line": 18,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.utils.generate_test_email",
+      "target": "app.utils.render_email_template",
+      "type": "calls",
+      "line": 63,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.utils.generate_test_email",
+      "target": "app.utils.EmailData",
+      "type": "calls",
+      "line": 67,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.utils.generate_reset_password_email",
+      "target": "app.utils.render_email_template",
+      "type": "calls",
+      "line": 74,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.utils.generate_reset_password_email",
+      "target": "app.utils.EmailData",
+      "type": "calls",
+      "line": 84,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.utils.generate_new_account_email",
+      "target": "app.utils.render_email_template",
+      "type": "calls",
+      "line": 92,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.utils.generate_new_account_email",
+      "target": "app.utils.EmailData",
+      "type": "calls",
+      "line": 102,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.deps",
+      "target": "app.core.db",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.deps",
+      "target": "app.models",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.deps",
+      "target": "app.core.config",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.deps",
+      "target": "app.core.security",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.deps",
+      "target": "app.core",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.main",
+      "target": "app.api.routes.utils",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.main",
+      "target": "app.core.config",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.main",
+      "target": "app.api.routes.users",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.main",
+      "target": "app.api.routes.private",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.main",
+      "target": "app.api.routes",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.main",
+      "target": "app.api.routes.login",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.main",
+      "target": "app.api.routes.items",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items",
+      "target": "app.api.deps",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.items",
+      "target": "app.models",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login",
+      "target": "app.models",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login",
+      "target": "app.api.deps",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login",
+      "target": "app.core.config",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login",
+      "target": "app.utils",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login",
+      "target": "app.core",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login",
+      "target": "app.crud",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login",
+      "target": "app",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.login",
+      "target": "app.core.security",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.private",
+      "target": "app.models",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.private",
+      "target": "app.core.security",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.private",
+      "target": "app.api.deps",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users",
+      "target": "app.models",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users",
+      "target": "app.api.deps",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users",
+      "target": "app.core.config",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users",
+      "target": "app.core.security",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users",
+      "target": "app.crud",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users",
+      "target": "app.utils",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.users",
+      "target": "app",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.utils",
+      "target": "app.models",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.utils",
+      "target": "app.utils",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.api.routes.utils",
+      "target": "app.api.deps",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.core.db",
+      "target": "app.models",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.core.db",
+      "target": "app.core.config",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.core.db",
+      "target": "app.crud",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.core.db",
+      "target": "app",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.core.security",
+      "target": "app.core.config",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.crud",
+      "target": "app.models",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.crud",
+      "target": "app.core.security",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.initial_data",
+      "target": "app.core.db",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.main",
+      "target": "app.core.config",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.main",
+      "target": "app.api.main",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.utils",
+      "target": "app.core.config",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.utils",
+      "target": "app.core.security",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "app.utils",
+      "target": "app.core",
+      "type": "imports",
+      "line": null,
+      "confidence": "exact"
+    },
+    {
+      "source": "external.browser.post_login_access_token",
+      "target": "app.api.routes.login.login_access_token",
+      "type": "calls",
+      "line": 24,
+      "confidence": "manual"
+    },
+    {
+      "source": "external.browser.authenticated_request",
+      "target": "app.api.deps.get_current_user",
+      "type": "calls",
+      "line": 30,
+      "confidence": "manual"
+    }
+  ]
+}

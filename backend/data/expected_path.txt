@@ -1,0 +1,10 @@
+external.browser.post_login_access_token -> app.api.routes.login.login_access_token calls app/api/routes/login.py:24
+app.api.routes.login.login_access_token -> app.crud.authenticate calls app/api/routes/login.py:30
+app.crud.authenticate -> app.crud.get_user_by_email calls app/crud.py:46
+app.crud.authenticate -> app.core.security.verify_password calls app/crud.py:50
+app.api.routes.login.login_access_token -> app.core.security.create_access_token calls app/api/routes/login.py:39
+external.browser.authenticated_request -> app.api.deps.get_current_user calls app/api/deps.py:30
+app.api.deps.get_current_user -> app.api.deps.get_db depends app/api/deps.py:30
+app.api.deps.get_current_user -> app.models.TokenPayload calls app/api/deps.py:35
+app.api.routes.users.create_user -> app.crud.create_user calls app/api/routes/users.py:68
+app.crud.create_user -> app.core.security.get_password_hash calls app/crud.py:12
