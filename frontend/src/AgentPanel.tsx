@@ -2,6 +2,9 @@ import type { ReactNode } from "react";
 import { PRESET_QUESTIONS, type SearchHit } from "./types";
 
 type Props = {
+  repoPicker: ReactNode;
+  demo: boolean;
+  askHint: string | null;
   question: string;
   onQuestion: (value: string) => void;
   onAsk: (question: string) => void;
@@ -19,6 +22,9 @@ type Props = {
 };
 
 export function AgentPanel({
+  repoPicker,
+  demo,
+  askHint,
   question,
   onQuestion,
   onAsk,
@@ -39,6 +45,7 @@ export function AgentPanel({
     <aside className="panel">
       <p className="kicker">Call path</p>
       <h1>RepoNav</h1>
+      {repoPicker}
       <div className="tabs" role="tablist">
         <button type="button" role="tab" aria-selected={tab === "tour"} className={tab === "tour" ? "tab on" : "tab"} onClick={() => onTab("tour")}>
           Ask & tour
@@ -57,7 +64,7 @@ export function AgentPanel({
         regroup
       ) : (
         <>
-      <p className="lede">Follow a real call path through this backend.</p>
+      <p className="lede">{askHint ?? "Follow a real call path through this code."}</p>
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -77,7 +84,7 @@ export function AgentPanel({
         </button>
       </form>
       <div className="presets">
-        {PRESET_QUESTIONS.map((preset) => (
+        {(demo ? PRESET_QUESTIONS : []).map((preset) => (
           <button key={preset} type="button" className="ghost" disabled={!ready || asking} onClick={() => onAsk(preset)}>
             {preset}
           </button>
@@ -87,7 +94,7 @@ export function AgentPanel({
       <input
         id="symbol"
         value={search}
-        placeholder="login, verify_password, create_user"
+        placeholder={demo ? "login, verify_password, create_user" : "Function, class, or file name"}
         onChange={(event) => onSearch(event.target.value)}
       />
       {hits.length > 0 && (

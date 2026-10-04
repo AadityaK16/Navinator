@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { ForceGraphMethods } from "react-force-graph-3d";
 import { ask, fetchBlast, fetchConfig, fetchGraph, fetchHistory, fetchNode, fetchSearch, narrateTour, regroup } from "./api";
 import { AgentPanel } from "./AgentPanel";
@@ -12,7 +12,7 @@ import { RegroupPanel } from "./RegroupPanel";
 import { Timeline } from "./Timeline";
 import { flyTo, frameNodes } from "./tour";
 import { TourBar } from "./TourBar";
-import type { GNode, GraphData, History, LinkType, ModelConfig, NodeDetail, SearchHit, TourStop } from "./types";
+import type { GNode, GraphData, History, LinkType, ModelConfig, NodeDetail, RepoInfo, SearchHit, TourStop } from "./types";
 import { useTour } from "./useTour";
 import { stopAllSpeech, type VoiceChoice } from "./voice";
 
@@ -40,7 +40,7 @@ function isTyping(target: EventTarget | null): boolean {
   return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable;
 }
 
-export default function App() {
+export default function App({ repo, repoPicker }: { repo: RepoInfo; repoPicker: ReactNode }) {
   const fgRef = useRef<ForceGraphMethods | undefined>(undefined);
   const closeStream = useRef<(() => void) | null>(null);
   const askGen = useRef(0);
@@ -679,6 +679,13 @@ export default function App() {
         )}
       </div>
       <AgentPanel
+        repoPicker={repoPicker}
+        demo={repo.kind === "demo"}
+        askHint={
+          repo.kind !== "demo" && modelConfig && !modelConfig.live
+            ? "Asking needs ANTHROPIC_API_KEY or private mode for this repo. Search, regroup, and the graph work without one."
+            : null
+        }
         question={question}
         onQuestion={setQuestion}
         onAsk={onAsk}
@@ -754,7 +761,7 @@ export default function App() {
           ) : (
             <>
               <li><i className="swatch ring" /> File, each its own colour</li>
-              <li><i className="swatch violet" /> Browser request</li>
+              {graph.nodes.some((n) => n.type === "external") && <li><i className="swatch violet" /> Browser request</li>}
               <li><i className="swatch cyan" /> Path</li>
               <li><i className="swatch gold" /> Current stop</li>
             </>

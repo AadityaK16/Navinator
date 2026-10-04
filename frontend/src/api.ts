@@ -1,4 +1,4 @@
-import type { Action, BlastHit, GraphData, History, ModelConfig, NodeDetail, RegroupResult, SearchHit, TourStop } from "./types";
+import type { Action, BlastHit, GraphData, History, ModelConfig, NodeDetail, RegroupResult, RepoList, SearchHit, TourStop } from "./types";
 
 const BASE = import.meta.env.VITE_API_BASE ?? "http://127.0.0.1:8741";
 
@@ -115,4 +115,22 @@ export function regroup(
   current: { title: string; groups: { name: string; members: string[] }[] } | null,
 ): Promise<RegroupResult> {
   return postJson("/regroup", { prompt, current });
+}
+
+export function fetchRepos(): Promise<RepoList> {
+  return getJson("/repos");
+}
+
+export function activateRepo(id: string): Promise<RepoList> {
+  return postJson("/repos/activate", { id });
+}
+
+export function uploadRepo(name: string, files: { path: string; content: string }[]): Promise<RepoList> {
+  return postJson("/repos/upload", { name, files });
+}
+
+export async function deleteRepo(id: string): Promise<RepoList> {
+  const response = await fetch(`${BASE}/repos/${encodeURIComponent(id)}`, { method: "DELETE" });
+  if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+  return response.json() as Promise<RepoList>;
 }

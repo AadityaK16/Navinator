@@ -425,3 +425,33 @@ form button { margin-top: 0.6rem; width: 100%; }
 @media (max-width: 1100px) {
   .topcenter { left: 16px; right: 16px; top: auto; bottom: 16px; }
 }
+
+/* ---------- repo picker ---------- */
+.repo-picker { display: flex; flex-direction: column; gap: 6px; margin: 0.2rem 0 0.7rem; }
+.repo-row { display: flex; gap: 6px; }
+.repo-row select {
+  flex: 1;
+  min-width: 0;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0c0e14;
+  color: inherit;
+  font: inherit;
+  font-size: 0.86rem;
+  padding: 0.45rem 0.5rem;
+}
+.repo-row button { white-space: nowrap; font-size: 0.82rem; padding: 0.45rem 0.65rem; }
+.repo-picker .stream-error { margin: 0; font-size: 0.8rem; }
+button.link { background: none; padding: 0; color: #36c5ff; font-weight: 550; font-size: inherit; text-decoration: underline; }
+.drop-overlay {
+  position: fixed;
+  inset: 12px;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  border: 2px dashed #36c5ff;
+  border-radius: 18px;
+  background: rgba(5, 6, 10, 0.72);
+  pointer-events: none;
+}
+.drop-overlay p { font-size: 1.2rem; font-weight: 600; color: #e7f7ff; }

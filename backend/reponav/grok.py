@@ -95,7 +95,9 @@ async def chat_json(system: str, user: str, max_tokens: int = 3000) -> tuple[dic
             text = "".join(getattr(block, "text", "") for block in resp.content)
             return _extract_json(text), "claude"
         except Exception as exc:  # noqa: BLE001
-            errors.append(f"claude: {exc}")
+            from .agent import explain_error
+
+            errors.append(f"Claude: {explain_error(exc)}")
     raise GrokError("; ".join(errors) or "no model configured")
 
 
@@ -285,7 +287,7 @@ def keyword_regroup(prompt: str) -> dict:
     grouped by file."""
     ranked = search_codebase(prompt, k=10)
     if not ranked:
-        raise GrokError("nothing in the code matched that request; add XAI_API_KEY for AI regrouping")
+        raise GrokError("nothing in the code matched those words")
     top = ranked[0]["score"]
     hits = [h["id"] for h in ranked if h["score"] >= top * 0.45]
     keep = set(hits)
@@ -323,7 +325,12 @@ async def regroup(prompt: str, current: dict | None = None) -> dict:
         error = None
     except GrokError as exc:
         error = str(exc)
-        result = keyword_regroup(prompt)
+        try:
+            result = keyword_regroup(prompt)
+        except GrokError as miss:
+            if error == "no model configured":
+                raise GrokError(f"{miss}. Add XAI_API_KEY or ANTHROPIC_API_KEY for AI regrouping.") from exc
+            raise GrokError(f"AI regrouping failed ({error}), and {miss}.") from exc
         source = "keyword"
     placed = {nid for g in result["groups"] for nid in g["members"]}
     result["hidden"] = sorted(nid for nid in NODES if nid not in placed)

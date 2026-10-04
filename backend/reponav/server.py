@@ -11,8 +11,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel
 
-from .agent import LOCAL_PROVIDERS, provider, run_agent
-from . import grok
+from .agent import LOCAL_PROVIDERS, explain_error, provider, run_agent
+from . import grok, repos
 from .graph import DATA, GRAPH, NODES, blast_radius, node_source, search_codebase
 
 app = FastAPI(title="RepoNav")
@@ -25,7 +25,7 @@ app.add_middleware(
 
 CACHED = json.loads((DATA / "demo_tours.json").read_text())
 HISTORY_PATH = DATA / "history.json"
-ACTION_TIMEOUT_S = 25
+ACTION_TIMEOUT_S = 60
 LOCAL_ACTION_TIMEOUT_S = 120
 
 
@@ -76,7 +76,14 @@ async def mock_agent(q: str) -> AsyncIterator[dict]:
 
 
 async def guarded(q: str) -> AsyncIterator[dict]:
+    demo = repos.is_demo()
     if not use_live_agent():
+        if not demo:
+            yield {
+                "type": "error",
+                "message": "Saved tours only cover the demo repo. Add ANTHROPIC_API_KEY or run private mode to ask about this one.",
+            }
+            return
         async for action in mock_agent(q):
             yield action
         return
@@ -89,7 +96,10 @@ async def guarded(q: str) -> AsyncIterator[dict]:
             limit = LOCAL_ACTION_TIMEOUT_S if provider() in LOCAL_PROVIDERS else ACTION_TIMEOUT_S
             if time.monotonic() - start > limit:
                 raise TimeoutError
-    except Exception:
+    except Exception as exc:
+        if not demo:
+            yield {"type": "error", "message": f"The agent could not finish a tour. {explain_error(exc) if str(exc) else 'It ran too long.'}"}
+            return
         yield {"type": "status", "message": "Using saved route"}
         yield _tour_or_error(q)
 
@@ -107,7 +117,7 @@ class LayoutBody(BaseModel):
 
 def graph_payload() -> dict:
     positions = {}
-    layout_path = DATA / "layout.json"
+    layout_path = repos.layout_path()
     if layout_path.exists():
         raw = json.loads(layout_path.read_text())
         positions = {n["id"]: n for n in raw.get("nodes", [])}
@@ -136,6 +146,8 @@ def graph():
 
 @app.get("/history")
 def history():
+    if not repos.is_demo():
+        raise HTTPException(status_code=404, detail="history is only recorded for the demo repo")
     if not HISTORY_PATH.exists():
         raise HTTPException(status_code=404, detail="no history; run python -m reponav.history")
     return json.loads(HISTORY_PATH.read_text())
@@ -218,8 +230,53 @@ def blast(nid: str):
 @app.post("/layout")
 def save_layout(body: LayoutBody):
     payload = {"nodes": [n.model_dump() for n in body.nodes]}
-    (DATA / "layout.json").write_text(json.dumps(payload))
+    path = repos.layout_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload))
     return {"ok": True}
+
+
+@app.get("/repos")
+def list_repos():
+    return repos.list_repos()
+
+
+class ActivateBody(BaseModel):
+    id: str
+
+
+@app.post("/repos/activate")
+def activate_repo(body: ActivateBody):
+    try:
+        return repos.activate(body.id)
+    except repos.RepoError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+class UploadFile(BaseModel):
+    path: str
+    content: str
+
+
+class UploadBody(BaseModel):
+    name: str
+    files: list[UploadFile]
+
+
+@app.post("/repos/upload")
+def upload_repo(body: UploadBody):
+    try:
+        return repos.upload(body.name, [f.model_dump() for f in body.files])
+    except repos.RepoError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.delete("/repos/{repo_id}")
+def delete_repo(repo_id: str):
+    try:
+        return repos.delete(repo_id)
+    except repos.RepoError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @app.get("/ask")

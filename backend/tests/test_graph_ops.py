@@ -1,7 +1,7 @@
 import asyncio
 import json
 
-from reponav.agent import validate_tour
+from reponav.agent import run_tool, validate_tour
 from reponav.graph import DATA, G, blast_radius, evidence_for, search_codebase, trace_path
 from reponav import server
 
@@ -110,3 +110,11 @@ def test_slow_agent_falls_back(monkeypatch):
     assert actions[0]["message"] == "Searching: login"
     assert any(a.get("message") == "Using saved route" for a in actions)
     assert any(a["type"] == "tour" for a in actions)
+
+
+def test_tour_may_follow_any_traced_path():
+    state = {"traced": [[LOGIN, AUTHENTICATE, VERIFY], [LOGIN, TOKEN]]}
+    stops = [{"node_id": nid, "narration": ""} for nid in (LOGIN, AUTHENTICATE, VERIFY)]
+    out, actions = run_tool("present_tour", {"stops": stops}, state)
+    assert out == {"ok": True}
+    assert actions[0]["type"] == "tour"

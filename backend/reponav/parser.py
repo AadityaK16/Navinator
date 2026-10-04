@@ -11,7 +11,10 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-SKIP = {"tests", "test", "migrations", "alembic", ".venv", "venv"}
+SKIP = {
+    "tests", "test", "migrations", "alembic", ".venv", "venv", "env",
+    "node_modules", "site-packages", "__pycache__", ".git", "build", "dist",
+}
 
 
 def mod_name(root: Path, path: Path) -> tuple[str, bool]:
@@ -217,6 +220,8 @@ def parse_repo(root: Path | str) -> tuple[dict, list]:
     # Browser requests are outside the repo. The edge lands on the handler
     # that actually receives it: login.py:24 and deps.py:30.
     def add_external(nid, label, target):
+        if target not in nodes:
+            return
         nodes[nid] = dict(
             id=nid,
             label=label,
@@ -229,8 +234,6 @@ def parse_repo(root: Path | str) -> tuple[dict, list]:
             cluster="external",
             doc="",
         )
-        if target not in nodes:
-            return
         edge(nid, target, "calls", nodes[target]["line_start"], "manual")
 
     add_external(

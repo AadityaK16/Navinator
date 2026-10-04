@@ -20,12 +20,9 @@ DATA = BACKEND_DIR / "data"
 _repo = Path(os.environ.get("REPO_ROOT", "../demo-repo/backend"))
 REPO_ROOT = _repo if _repo.is_absolute() else (BACKEND_DIR / _repo).resolve()
 
-GRAPH = json.loads((DATA / "graph.json").read_text())
-NODES = {n["id"]: n for n in GRAPH["nodes"]}
+GRAPH: dict = {"nodes": [], "links": []}
+NODES: dict[str, dict] = {}
 G = nx.DiGraph()
-for link in GRAPH["links"]:
-    if link["type"] in ("calls", "depends"):
-        G.add_edge(link["source"], link["target"], **link)
 
 
 def node_source(nid: str) -> str:
@@ -55,9 +52,7 @@ def _tokens(text: str) -> list[str]:
     return [t for t in re.split(r"[^a-zA-Z0-9]+", text.lower()) if len(t) > 1]
 
 
-SEARCHABLE = [
-    n for n in GRAPH["nodes"] if n["type"] in ("function", "method", "class", "external")
-]
+SEARCHABLE: list[dict] = []
 _src_cache: dict[str, list[str]] = {}
 
 
@@ -69,12 +64,35 @@ def _snippet(n: dict) -> str:
     return "\n".join(lines[start : (n["line_start"] or 1) + 39])
 
 
-BM25 = BM25Okapi([_tokens(f"{n['id']} {n['doc']} {_snippet(n)}") for n in SEARCHABLE])
+BM25: BM25Okapi | None = None
+
+
+def load_graph(graph: dict, repo_root: Path) -> None:
+    """Swap in another repo. Other modules hold GRAPH, NODES and G, so mutate them in place."""
+    global REPO_ROOT, BM25
+    REPO_ROOT = repo_root
+    GRAPH.clear()
+    GRAPH.update(graph)
+    NODES.clear()
+    NODES.update({n["id"]: n for n in graph["nodes"]})
+    G.clear()
+    for link in graph["links"]:
+        if link["type"] in ("calls", "depends"):
+            G.add_edge(link["source"], link["target"], **link)
+    _src_cache.clear()
+    SEARCHABLE[:] = [
+        n for n in graph["nodes"] if n["type"] in ("function", "method", "class", "external")
+    ]
+    corpus = [_tokens(f"{n['id']} {n['doc']} {_snippet(n)}") for n in SEARCHABLE]
+    BM25 = BM25Okapi(corpus) if corpus else None
+
+
+load_graph(json.loads((DATA / "graph.json").read_text()), REPO_ROOT)
 
 
 def search_codebase(query: str, k: int = 8) -> list[dict]:
     tokens = _tokens(query)
-    if not tokens:
+    if not tokens or BM25 is None:
         return []
     scores = BM25.get_scores(tokens)
     ranked = sorted(zip(scores, SEARCHABLE), key=lambda item: -float(item[0]))[:k]

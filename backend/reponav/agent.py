@@ -10,6 +10,8 @@ from .graph import G, evidence_for, read_node, search_codebase, trace_path
 DEFAULT_MODEL = "claude-sonnet-4-5"
 SYSTEM = """You guide a developer through a Python codebase as a tour.
 Work in this order: search_codebase, read_node on promising hits, trace_path through 2-4 waypoints from the entry point to where the work ends, then present_tour.
+Read at most 3 nodes before tracing, and call several tools in one turn when you can.
+Waypoints must form one call chain: each one calls the next, directly or through other functions. When a function calls several helpers side by side, follow the single chain that best answers the question.
 Rules: only use node ids returned by tools. A tour has 3-7 stops, all on the traced path, in order. Each consecutive pair must be a direct edge on that path, with no skipped hops.
 Each narration is at most 2 short sentences, spoken aloud: say what this code does and why we go next.
 No markdown in narration."""
@@ -122,6 +124,18 @@ def local_tools() -> list[dict]:
     ]
 
 
+def explain_error(exc: BaseException) -> str:
+    """Turn provider errors into a line that says what to fix."""
+    text = str(exc)
+    if "anthropic-workspace-id" in text:
+        return "Your Anthropic key is user-level, so it needs ANTHROPIC_WORKSPACE_ID in backend/.env (Console → Settings → Workspaces), then restart the backend."
+    if "not_found_error" in text and "Workspace" in text:
+        return "Anthropic can't find ANTHROPIC_WORKSPACE_ID for this key. Use a workspace from the same organization as the key, or a workspace-scoped key."
+    if "authentication_error" in text or "invalid x-api-key" in text:
+        return "Anthropic rejected ANTHROPIC_API_KEY. Check the key in backend/.env."
+    return text[:300] or type(exc).__name__
+
+
 def get_client():
     global _client
     if _client is None:
@@ -203,7 +217,9 @@ def run_tool(name: str, args: dict, state: dict) -> tuple[dict | list, list[dict
     actions: list[dict] = []
     if name == "present_tour":
         stops = args.get("stops") or []
-        err = validate_tour(stops, state.get("traced"))
+        # The model often traces a few paths before choosing one, so accept any of them.
+        errors = [validate_tour(stops, path) for path in state["traced"]] or [validate_tour(stops, None)]
+        err = None if None in errors else errors[-1]
         if not err:
             actions.append({"type": "tour", "stops": _enrich(stops)})
             return {"ok": True}, actions
@@ -215,7 +231,7 @@ def run_tool(name: str, args: dict, state: dict) -> tuple[dict | list, list[dict
     except TypeError:
         out = {"error": "invalid arguments"}
     if name == "trace_path" and isinstance(out, dict) and "path" in out:
-        state["traced"] = out["path"]
+        state["traced"].append(out["path"])
     if name == "search_codebase" and isinstance(out, list):
         actions.append({"type": "candidates", "node_ids": [row["id"] for row in out[:5]]})
     return out, actions
@@ -229,8 +245,8 @@ async def run_agent(q: str):
     client = get_client()
     model = os.environ.get("MODEL") or DEFAULT_MODEL
     messages = [{"role": "user", "content": q}]
-    state: dict = {"traced": None}
-    for _ in range(8):
+    state: dict = {"traced": []}
+    for _ in range(14):
         resp = await asyncio.wait_for(
             client.messages.create(
                 model=model,
@@ -287,7 +303,7 @@ async def run_local_agent(q: str):
     timeout = float(os.environ.get("LOCAL_TIMEOUT_S") or 60)
     yield {"type": "status", "message": f"Running {info['model']} locally" if info["on_device"] else f"Running {info['model']}"}
     messages: list[dict] = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": q}]
-    state: dict = {"traced": None}
+    state: dict = {"traced": []}
     async with httpx.AsyncClient(timeout=timeout) as client:
         for _ in range(10):
             resp = await client.post(

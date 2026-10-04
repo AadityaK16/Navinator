@@ -30,6 +30,12 @@ cd frontend && npm run dev
 
 The UI is at `http://127.0.0.1:43123`. The API is at `http://127.0.0.1:8741`. Copy `backend/.env.example` to `backend/.env` if you want a key or `DEMO_MODE=cached`.
 
+## Your own repo
+
+The picker at the top of the panel switches between the demo, the projects in `sample-repos/`, and folders you upload. Click "Upload folder" or drop a folder anywhere on the page. Only its `.py` files are sent, and the graph is rebuilt from them. Uploads are saved in `backend/data/uploads/` and stay in the picker; re-uploading a folder with the same name replaces it.
+
+Saved tours and the time machine cover only the demo. To ask questions about another repo, set `ANTHROPIC_API_KEY` or use private mode. Search, regrouping, and the graph work without a key. The first time a repo opens, the graph settles for a few seconds, then its layout is saved in `backend/data/layouts/`.
+
 ## Private mode (local LLM)
 
 Run the agent on a model on your own machine so no source code leaves it. Any server that speaks the OpenAI chat API with tool calling works: Ollama, LM Studio, llama.cpp server.
