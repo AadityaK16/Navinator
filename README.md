@@ -77,4 +77,3 @@ python3 -m pytest
 
 `backend/data/layout.json` is a frozen 3D layout made by `python3 -m navinator.layout3d` (run from `backend`): folders spread around a large sphere, files on a sphere inside their folder, symbols orbiting their file. Click a labelled file node, a folder chip, or "Open its file group" to fly into a group; Esc goes back out. The UI loads it on startup so the graph does not reshuffle. After a parser change, delete `layout.json` once and reload; the view will settle and save a new layout.
 
-Note on commit history: Most of our earlier commit history was lost when a force push accidentally overwrote the main branch during the hackathon. The code is complete, but the commit log doesn't fully show who built what or when.
